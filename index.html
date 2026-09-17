@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip Note | 澳新 11 日度假随身助手</title>
+  <meta name="description" content="Trip Note - 极致高质感的旅行随身 Web App，包含严格时间顺序行程时间轴、行级延伸附加信息、动态地图视图与手机导航。">
+  
+  <!-- Mobile Web App & PWA Capabilities -->
+  <meta name="theme-color" content="#090d16">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Trip Note">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧳</text></svg>">
+
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/main.css?v=37.0">
+  <link rel="stylesheet" href="css/components.css?v=37.0">
+  <link rel="stylesheet" href="css/animations.css?v=37.0">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Hero & Header Section -->
+    <header class="app-header">
+      <div class="hero-banner animate-fade-in">
+        <div class="brand-badge">✨ Trip Note Vibe Assistant v37.0 · Phase 3 旅途质感与应急保障</div>
+        <h1 class="app-title">澳新 11 日度假行程规划</h1>
+        <p class="app-subtitle">出行人员：ZHANG/BURUO, ZHANG/LIYUAN | 2026.09.27 - 10.07 | 涵盖布里斯班过境慢游、新西兰南岛冰川自驾与悉尼海港都市。</p>
+        
+        <div class="hero-stats">
+          <div class="stat-chip">
+            <span class="stat-icon">🇳🇿</span>
+            <div class="stat-info">
+              <div class="stat-value">新西兰南岛环线</div>
+              <div class="stat-label">阿卡罗阿 · 蒂卡波星空 · 库克山冰川</div>
+            </div>
+          </div>
+          <div class="stat-chip">
+            <span class="stat-icon">🇦🇺</span>
+            <div class="stat-info">
+              <div class="stat-value">澳大利亚经典</div>
+              <div class="stat-label">布里斯班 5h 过境游 · 悉尼歌剧院 & 邦迪</div>
+            </div>
+          </div>
+          <div class="stat-chip">
+            <span class="stat-icon">✈️</span>
+            <div class="stat-info">
+              <div class="stat-value">全程商务舱</div>
+              <div class="stat-label">新西兰航空 · 阿联酋航空 A380 · 澳航</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multi-Timezone Live Clock Bar -->
+        <div class="timezone-clock-bar animate-fade-in" id="timezone-clock-bar">
+          <div class="tz-clock-item" id="tz-beijing">
+            <span class="tz-clock-flag">🇨🇳</span>
+            <div class="tz-clock-content">
+              <div class="tz-clock-city">北京时间 <span class="tz-clock-tag">UTC+8 基准</span></div>
+              <div class="tz-clock-time" id="tz-beijing-time">--:--</div>
+              <div class="tz-clock-date" id="tz-beijing-date">--/-- 周-</div>
+            </div>
+          </div>
+          <div class="tz-clock-divider"></div>
+          <div class="tz-clock-item" id="tz-sydney">
+            <span class="tz-clock-flag">🇦🇺</span>
+            <div class="tz-clock-content">
+              <div class="tz-clock-city">悉尼时间 <span class="tz-clock-tag" id="tz-sydney-diff">+2h</span></div>
+              <div class="tz-clock-time" id="tz-sydney-time">--:--</div>
+              <div class="tz-clock-date" id="tz-sydney-date">--/-- 周-</div>
+            </div>
+          </div>
+          <div class="tz-clock-divider"></div>
+          <div class="tz-clock-item" id="tz-nz">
+            <span class="tz-clock-flag">🇳🇿</span>
+            <div class="tz-clock-content">
+              <div class="tz-clock-city">基督城时间 <span class="tz-clock-tag" id="tz-nz-diff">+5h</span></div>
+              <div class="tz-clock-time" id="tz-nz-time">--:--</div>
+              <div class="tz-clock-date" id="tz-nz-date">--/-- 周-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Live Focus Mini Bar (Now Mode & Simulation) -->
+    <div id="live-focus-container" class="live-focus-container animate-fade-in stagger-1"></div>
+
+    <!-- Filter & View Mode Control Bar -->
+    <div class="control-bar animate-fade-in stagger-1">
+      <!-- Destination Filter Tabs -->
+      <div class="filter-tabs" id="filter-tabs-container">
+        <!-- Rendered dynamically by JS -->
+      </div>
+
+      <!-- View Mode Switcher -->
+      <div class="view-mode-tabs">
+        <button class="tab-btn search-trigger-btn" onclick="openSearchModal(event)" title="全局即时搜索 (快捷键 ⌘K 或 /)">
+          <span class="btn-icon">🔍</span>
+          <span>搜索</span>
+          <kbd class="shortcut-kbd">⌘K</kbd>
+        </button>
+        <button class="tab-btn checklist-trigger-btn" onclick="openChecklistModal(event)" title="行前备忘与澳新海关申报清单">
+          <span class="btn-icon">📋</span>
+          <span>备忘清单</span>
+          <span class="checklist-badge-pill" id="checklist-progress-pill">0%</span>
+        </button>
+        <button class="tab-btn currency-trigger-btn" onclick="openCurrencyModal(event)" title="NZD · AUD · CNY 实时双向汇率换算">
+          <span class="btn-icon">💱</span>
+          <span>汇率换算</span>
+        </button>
+        <button class="tab-btn print-trigger-btn" onclick="triggerPrintItinerary(event)" title="打印或导出 A4 黑白纸质应急行程单">
+          <span class="btn-icon">🖨️</span>
+          <span>打印应急单</span>
+        </button>
+        <button class="tab-btn expand-toggle-btn" id="expand-all-btn" onclick="toggleAllDaysExpand(event)" title="一键展开或收起全行程天数卡片">
+          <span id="expand-all-btn-label">📂 展开全部行程</span>
+        </button>
+        <button class="tab-btn view-btn active" data-view="timeline">
+          <span>⏱️ 时间顺序视图</span>
+        </button>
+        <button class="tab-btn view-btn" data-view="map">
+          <span>🗺️ 地图视图</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Layout Container -->
+    <main class="main-layout">
+      <!-- Print-Only Emergency Contacts & Critical Bookings Table (Visible only in Print / A4 Export) -->
+      <section class="print-only-emergency" id="print-emergency-section">
+        <div class="print-emergency-header">
+          <h1 class="print-title">🧳 Trip Note 澳新 11 日度假行程 · 应急纸质备忘单 (A4)</h1>
+          <p class="print-meta">出行人员：ZHANG/BURUO, ZHANG/LIYUAN | 2026.09.27 - 2026.10.07 | 紧急离线备用</p>
+        </div>
+
+        <table class="print-table print-contacts-table">
+          <thead>
+            <tr>
+              <th style="width: 32%;">紧急救援 / 外交领保服务</th>
+              <th style="width: 30%;">联系电话</th>
+              <th style="width: 38%;">适用范围与重要指引</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🚨 新西兰紧急报警/火警/救护车</td>
+              <td><b>111</b></td>
+              <td>新西兰全境免区号拨打（提供中文三方同传翻译）</td>
+            </tr>
+            <tr>
+              <td>🚨 澳大利亚紧急报警/火警/救护车</td>
+              <td><b>000</b></td>
+              <td>澳大利亚全境免区号拨打（提供中文翻译支持）</td>
+            </tr>
+            <tr>
+              <td>🇨🇳 中国驻克赖斯特彻奇总领馆 (领保)</td>
+              <td><b>+64-3-3411011</b> / 021-1767288</td>
+              <td>新西兰南岛车祸救援、护照遗失、紧急领事求助</td>
+            </tr>
+            <tr>
+              <td>🇨🇳 中国驻悉尼总领馆 (领保)</td>
+              <td><b>+61-2-95505519</b></td>
+              <td>澳大利亚新南威尔士州紧急领保协助</td>
+            </tr>
+            <tr>
+              <td>🇨🇳 外交部全球领事保护应急热线</td>
+              <td><b>+86-10-12308</b></td>
+              <td>中国外交部 24 小时全球领保应急热线</td>
+            </tr>
+            <tr>
+              <td>🚗 Snap Rentals 基督城租车道路救援</td>
+              <td><b>0800 288 699</b> / +64 9 275 2438</td>
+              <td>南岛自驾车辆事故、故障检修与免费机场接驳</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="print-table print-itinerary-summary-table" style="margin-top: 12px;">
+          <thead>
+            <tr>
+              <th style="width: 15%;">日期与天数</th>
+              <th style="width: 45%;">核心交通 / 航班路线</th>
+              <th style="width: 40%;">预订住宿 / 关键地址</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Day 1 (09/27)</b></td>
+              <td>南航 CZ381 (广州白云 T2 21:05 ➔ 布里斯班 T1 08:25+1)</td>
+              <td>机上夜航卧铺</td>
+            </tr>
+            <tr>
+              <td><b>Day 2 (09/28)</b></td>
+              <td>新西兰航空 NZ207 (布里斯班 T1 18:40 ➔ 基督城 00:05+1)</td>
+              <td>Novotel Christchurch Airport (航站楼步行 1 分钟)</td>
+            </tr>
+            <tr>
+              <td><b>Day 3 (09/29)</b></td>
+              <td>Snap Rentals 取车自驾 ➔ 莎玛拉羊驼 ➔ 阿卡罗阿灯塔日落</td>
+              <td>Akaroa Village Inn (阿卡罗阿港湾)</td>
+            </tr>
+            <tr>
+              <td><b>Day 4 (09/30)</b></td>
+              <td>自驾 SH75/SH79 ➔ Fairlie 肉派 ➔ 约翰山天文台 ➔ 蒂卡波观星</td>
+              <td>Lakeview Studio B (蒂卡波湖景，密码盒自助办理)</td>
+            </tr>
+            <tr>
+              <td><b>Day 5 (10/01)</b></td>
+              <td>普卡基湖高山三文鱼 ➔ 库克山冰川徒步 (Plan A/B) ➔ 基督城</td>
+              <td>Fable Christchurch (基督城中心新摄政街旁)</td>
+            </tr>
+            <tr>
+              <td><b>Day 6 (10/02)</b></td>
+              <td>城堡山巨石阵漫步 ➔ 雅芳河植物园 ➔ Twenty Seven Steps晚宴</td>
+              <td>Fable Christchurch</td>
+            </tr>
+            <tr>
+              <td><b>Day 7 (10/03)</b></td>
+              <td>还车出境；阿联酋航空 EK413 商务舱 (基督城 18:45 ➔ 悉尼 20:05)</td>
+              <td>PARKROYAL Darling Harbour (悉尼达令港核心区)</td>
+            </tr>
+            <tr>
+              <td><b>Day 8 (10/04)</b></td>
+              <td>悉尼经典渡轮 F2/F9 ➔ 塔龙加动物园 ➔ 屈臣湾日落 ➔ 岩石区</td>
+              <td>PARKROYAL Darling Harbour</td>
+            </tr>
+            <tr>
+              <td><b>Day 9 (10/05)</b></td>
+              <td>邦迪至库吉步道 (Bondi to Coogee) 6km 海岸悬崖徒步</td>
+              <td>PARKROYAL Darling Harbour</td>
+            </tr>
+            <tr>
+              <td><b>Day 10 (10/06)</b></td>
+              <td>费瑟戴尔野生动物园 (考拉袋鼠) ➔ 达令港告别晚宴 ➔ 打包</td>
+              <td>PARKROYAL Darling Harbour</td>
+            </tr>
+            <tr>
+              <td><b>Day 11 (10/07)</b></td>
+              <td>T8轨交至悉尼T1 ➔ 香港航空 HX018 ➔ HX304 ➔ 北京首都T2</td>
+              <td>平安抵京</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Dynamic Timeline Grid Mount Point -->
+      <section class="timeline-section" id="timeline-container"></section>
+    </main>
+
+    <!-- Mobile Ergonomics Bottom Floating Dock -->
+    <div class="mobile-dock" id="mobile-dock">
+      <button class="dock-btn" onclick="jumpToToday(event)" title="直达今天">
+        <span class="dock-icon">📍</span>
+        <span class="dock-label">今日</span>
+      </button>
+      <button class="dock-btn" onclick="openSearchModal(event)" title="全局搜索 (⌘K)">
+        <span class="dock-icon">🔍</span>
+        <span class="dock-label">搜索</span>
+      </button>
+      <button class="dock-btn" onclick="openChecklistModal(event)" title="行前备忘清单">
+        <span class="dock-icon">📋</span>
+        <span class="dock-label">备忘</span>
+      </button>
+      <button class="dock-btn" onclick="openCurrencyModal(event)" title="实时双向汇率换算">
+        <span class="dock-icon">💱</span>
+        <span class="dock-label">汇率</span>
+      </button>
+      <button class="dock-btn" onclick="toggleMobileViewMode(event)" title="切换时间轴/地图">
+        <span class="dock-icon" id="dock-view-icon">🗺️</span>
+        <span class="dock-label" id="dock-view-label">地图</span>
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-container">
+        <div style="margin-bottom: 0.75rem;">
+          <button class="tab-btn print-footer-btn" onclick="triggerPrintItinerary(event)" style="display: inline-flex; margin: 0 auto; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);">
+            🖨️ 打印 / 导出 A4 黑白纸质应急行程单 (防止手机没电/无信号)
+          </button>
+        </div>
+        <p>💡 提示：点击景点右侧【🧭 导航】与【📍 定位】可直接唤起 Google 地图 / Apple 地图；点击【🦉 猫途鹰】可查阅网友真实点评。</p>
+        <p class="footer-subtext">Trip Note © 2026 · 专为度假随身行打造。</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-notification" id="toast-notification"></div>
+
+  <!-- Real Location Image Lightbox Modal -->
+  <div class="lightbox-modal" id="image-lightbox-modal" onclick="closeImageLightbox(event)">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <button class="lightbox-close-btn" onclick="closeImageLightbox(event)" title="关闭预览">✕</button>
+      <img id="lightbox-img" src="" alt="地标实景参考图">
+      <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <!-- Spotlight Search Modal (Cmd+K) -->
+  <div class="spotlight-modal-backdrop" id="search-modal" onclick="closeSearchModal(event)">
+    <div class="spotlight-modal" onclick="event.stopPropagation()">
+      <div class="spotlight-search-header">
+        <span class="spotlight-search-icon">🔍</span>
+        <input type="text" id="spotlight-search-input" class="spotlight-search-input" placeholder="搜索行程、景点、酒店、航班、美食、关键词..." autocomplete="off" spellcheck="false">
+        <button class="spotlight-clear-btn" id="spotlight-clear-btn" onclick="clearSearchInput(event)" title="清空">✕</button>
+        <button class="spotlight-close-btn" onclick="closeSearchModal(event)" title="关闭 (Esc)">Esc</button>
+      </div>
+      <div class="spotlight-results" id="spotlight-results">
+        <!-- Dynamic search results rendered by SearchService -->
+      </div>
+      <div class="spotlight-footer">
+        <div class="spotlight-shortcuts-hint">
+          <span><kbd>↑</kbd><kbd>↓</kbd> 移动</span>
+          <span><kbd>↵</kbd> 直达定位</span>
+          <span><kbd>Esc</kbd> 退出</span>
+        </div>
+        <div class="spotlight-stats" id="spotlight-stats">输入关键词即时检索全行程</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Travel Checklist & Customs Vault Modal -->
+  <div class="drawer-modal-backdrop" id="checklist-modal" onclick="closeChecklistModal(event)">
+    <div class="drawer-modal" onclick="event.stopPropagation()">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <h2 class="drawer-title">📋 行前备忘与海关申报清单</h2>
+          <p class="drawer-subtitle">离线本地持久化存储 · 澳新严苛生物安全避坑指南</p>
+        </div>
+        <button class="drawer-close-btn" onclick="closeChecklistModal(event)" title="关闭">✕</button>
+      </div>
+      
+      <!-- Progress Section -->
+      <div class="checklist-progress-section">
+        <div class="checklist-progress-info">
+          <span class="progress-title">准备进度</span>
+          <span class="progress-percentage" id="checklist-progress-text">0 / 18 项 (0%)</span>
+        </div>
+        <div class="checklist-progress-bar-bg">
+          <div class="checklist-progress-bar-fill" id="checklist-progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="checklist-category-tabs" id="checklist-category-tabs">
+        <button class="checklist-tab active" data-cat="all" onclick="filterChecklistCategory('all', event)">全部项</button>
+        <button class="checklist-tab" data-cat="docs" onclick="filterChecklistCategory('docs', event)">🛂 必备证件</button>
+        <button class="checklist-tab" data-cat="gear" onclick="filterChecklistCategory('gear', event)">🎒 关键行李</button>
+        <button class="checklist-tab" data-cat="customs" onclick="filterChecklistCategory('customs', event)">⚠️ 海关避坑</button>
+      </div>
+
+      <!-- Checklist Items List -->
+      <div class="checklist-items-container" id="checklist-items-container">
+        <!-- Dynamic items rendered by ChecklistService -->
+      </div>
+
+      <div class="drawer-footer">
+        <button class="checklist-reset-btn" onclick="resetChecklist(event)">🔄 重置所有勾选</button>
+        <button class="checklist-confirm-btn" onclick="closeChecklistModal(event)">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Currency Converter Modal (NZD · AUD · CNY) -->
+  <div class="drawer-modal-backdrop" id="currency-modal" onclick="closeCurrencyModal(event)">
+    <div class="drawer-modal currency-modal-card" onclick="event.stopPropagation()">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <h2 class="drawer-title">💱 随身实时汇率换算</h2>
+          <p class="drawer-subtitle">NZD · AUD · CNY 三币即时换算 · 离线自动缓存</p>
+        </div>
+        <button class="drawer-close-btn" onclick="closeCurrencyModal(event)" title="关闭">✕</button>
+      </div>
+
+      <div class="currency-converter-body">
+        <!-- Quick Preset Amount Chips -->
+        <div class="currency-quick-chips">
+          <span class="quick-chip-label">快捷预设:</span>
+          <button class="curr-chip" onclick="setCurrencyPreset(10, event)">$10</button>
+          <button class="curr-chip" onclick="setCurrencyPreset(25, event)">$25</button>
+          <button class="curr-chip" onclick="setCurrencyPreset(50, event)">$50</button>
+          <button class="curr-chip" onclick="setCurrencyPreset(100, event)">$100</button>
+          <button class="curr-chip" onclick="setCurrencyPreset(200, event)">$200</button>
+          <button class="curr-chip" onclick="setCurrencyPreset(500, event)">$500</button>
+        </div>
+
+        <!-- 3-Way Currency Inputs List -->
+        <div class="currency-inputs-list">
+          <!-- NZD Row -->
+          <div class="currency-input-row" data-curr="NZD">
+            <div class="curr-row-left">
+              <span class="curr-flag">🇳🇿</span>
+              <div class="curr-name-box">
+                <span class="curr-code">NZD</span>
+                <span class="curr-desc">新西兰元</span>
+              </div>
+            </div>
+            <div class="curr-input-wrap">
+              <span class="curr-sym">$</span>
+              <input type="number" step="any" id="curr-input-nzd" class="currency-number-input" placeholder="0.00" inputmode="decimal">
+            </div>
+          </div>
+
+          <!-- AUD Row -->
+          <div class="currency-input-row" data-curr="AUD">
+            <div class="curr-row-left">
+              <span class="curr-flag">🇦🇺</span>
+              <div class="curr-name-box">
+                <span class="curr-code">AUD</span>
+                <span class="curr-desc">澳大利亚元</span>
+              </div>
+            </div>
+            <div class="curr-input-wrap">
+              <span class="curr-sym">$</span>
+              <input type="number" step="any" id="curr-input-aud" class="currency-number-input" placeholder="0.00" inputmode="decimal">
+            </div>
+          </div>
+
+          <!-- CNY Row -->
+          <div class="currency-input-row" data-curr="CNY">
+            <div class="curr-row-left">
+              <span class="curr-flag">🇨🇳</span>
+              <div class="curr-name-box">
+                <span class="curr-code">CNY</span>
+                <span class="curr-desc">人民币</span>
+              </div>
+            </div>
+            <div class="curr-input-wrap">
+              <span class="curr-sym">¥</span>
+              <input type="number" step="any" id="curr-input-cny" class="currency-number-input" placeholder="0.00" inputmode="decimal">
+            </div>
+          </div>
+        </div>
+
+        <!-- Exchange Rate Info Indicator -->
+        <div class="currency-rate-banner">
+          <div class="rate-indicator" id="rate-indicator-text">
+            <span>1 NZD ≈ 4.35 CNY</span> · <span>1 AUD ≈ 4.70 CNY</span> · <span>1 AUD ≈ 1.08 NZD</span>
+          </div>
+          <div class="rate-update-time" id="rate-update-time">基准汇率（离线可用）</div>
+        </div>
+
+        <!-- Shopping Payment Survival Tips -->
+        <div class="currency-tips-box">
+          <div class="currency-tip-title">💡 澳新本地刷卡防坑要诀</div>
+          <ul class="currency-tips-list">
+            <li><b>拒绝 DCC 动态货币转换</b>：刷卡机如提示扣当地币（AUD/NZD）还是人民币（CNY），<b>务必选当地货币</b>！选 CNY 会被加收 3%~5% 恶性汇率转换费。</li>
+            <li><b>注意商家 Surcharge 手续费</b>：澳新餐厅和超市刷 Visa/MasterCard 信用卡常有 1.0%~1.8% Surcharge（周日/节假日可能更高），属合法透明收费。</li>
+            <li><b>优先使用免货币转换费卡</b>：推荐全币种信用卡或银联/Apple Pay 极速感应支付。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button class="checklist-reset-btn" onclick="refreshLiveRates(event)">🔄 更新即时汇率</button>
+        <button class="checklist-confirm-btn" onclick="closeCurrencyModal(event)">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript App Logic -->
+  <script src="js/data.js?v=37.0"></script>
+  <script src="js/maps.js?v=37.0"></script>
+  <script src="js/weather.js?v=37.0"></script>
+  <script src="js/app.js?v=37.0"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Trip Note PWA Service Worker Ready:', reg.scope))
+          .catch(err => console.warn('PWA Service Worker Registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

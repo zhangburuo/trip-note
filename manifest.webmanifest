@@ -1,0 +1,17 @@
+{
+  "name": "Trip Note | 澳新度假随身助手",
+  "short_name": "Trip Note",
+  "description": "优雅、现代、高度通用的旅行随身助手，包含时间轴日程、航班大牌、动态天气与离线保障。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#090d16",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧳</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

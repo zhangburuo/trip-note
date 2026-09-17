@@ -1,0 +1,329 @@
+/* ==========================================================================
+   Trip Note - Design System & Base Styles (Row-Aligned Integrated Layout)
+   ========================================================================== */
+
+:root {
+  /* Color Palette - Deep Midnight Theme */
+  --bg-dark: #090d16;
+  --bg-surface: rgba(18, 24, 38, 0.75);
+  --bg-surface-hover: rgba(28, 36, 56, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.04);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-bright: rgba(255, 255, 255, 0.18);
+  
+  /* Text Colors */
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  
+  /* Accent Colors & Gradients */
+  --accent-nz-from: #00f2fe;
+  --accent-nz-to: #4facfe;
+  --gradient-nz: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  
+  --accent-au-from: #ff9a44;
+  --accent-au-to: #fc6076;
+  --gradient-au: linear-gradient(135deg, #ff9a44 0%, #fc6076 100%);
+
+  --gradient-primary: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+  --gradient-hero: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  --gradient-card-glow: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 40%);
+
+  /* UI Tokens */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  
+  --font-family: 'Plus Jakarta Sans', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-glow-nz: 0 0 25px rgba(0, 242, 254, 0.25);
+  --shadow-glow-au: 0 0 25px rgba(255, 154, 68, 0.25);
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset & Setup */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(255, 154, 68, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(99, 102, 241, 0.06) 0px, transparent 50%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Row-Aligned App Container */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem 1.5rem;
+}
+
+/* Print Only Emergency Section (Hidden on screen) */
+.print-only-emergency {
+  display: none;
+}
+
+/* ==========================================================================
+   Phase 3: A4 Emergency Itinerary Print Stylesheet (@media print)
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
+  }
+
+  /* Reset layout & backgrounds to crisp ink-saving white */
+  html, body {
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+    font-size: 9pt !important;
+    line-height: 1.35 !important;
+  }
+
+  .app-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide non-printable web UI & interactive controls */
+  .app-header,
+  .live-focus-container,
+  .control-bar,
+  .mobile-dock,
+  .app-footer,
+  .spotlight-modal-backdrop,
+  .drawer-modal-backdrop,
+  .toast-notification,
+  .lightbox-modal,
+  .spot-actions,
+  .view-mode-tabs,
+  .filter-tabs,
+  .item-check-btn,
+  .day-plan-switcher-container,
+  .day-route-chip,
+  .weather-mount-box,
+  .day-toggle-arrow-btn,
+  .timezone-clock-bar,
+  .hero-banner {
+    display: none !important;
+  }
+
+  /* Display Emergency Section at page top */
+  .print-only-emergency {
+    display: block !important;
+    margin-bottom: 16px !important;
+    page-break-after: avoid;
+  }
+
+  .print-emergency-header {
+    border-bottom: 2px solid #000000;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+
+  .print-title {
+    font-size: 14pt !important;
+    font-weight: 800 !important;
+    color: #000000 !important;
+    margin: 0 0 4px 0 !important;
+  }
+
+  .print-meta {
+    font-size: 8.5pt !important;
+    color: #444444 !important;
+    margin: 0 !important;
+  }
+
+  .print-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 10px !important;
+  }
+
+  .print-table th, 
+  .print-table td {
+    border: 1px solid #444444 !important;
+    padding: 4px 6px !important;
+    font-size: 8pt !important;
+    color: #000000 !important;
+    vertical-align: top;
+  }
+
+  .print-table th {
+    background: #f0f0f0 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Force all Day Cards open and readable */
+  .day-card {
+    background: #ffffff !important;
+    border: 1px solid #666666 !important;
+    border-radius: 6px !important;
+    margin-bottom: 12px !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+
+  .day-card.collapsed .day-card-body {
+    display: block !important;
+  }
+
+  .day-header {
+    background: #f4f4f4 !important;
+    border-bottom: 1px solid #666666 !important;
+    padding: 6px 10px !important;
+    cursor: default !important;
+  }
+
+  .day-badge-pill {
+    background: #000000 !important;
+    color: #ffffff !important;
+    font-size: 8.5pt !important;
+    padding: 2px 6px !important;
+  }
+
+  .day-title-text {
+    color: #000000 !important;
+    font-size: 10.5pt !important;
+    font-weight: 800 !important;
+  }
+
+  .day-date, .day-city {
+    color: #333333 !important;
+  }
+
+  .day-card-body {
+    padding: 8px 10px !important;
+  }
+
+  .timeline-row-grid {
+    border-bottom: 1px dotted #aaaaaa !important;
+    padding: 6px 0 !important;
+    page-break-inside: avoid;
+  }
+
+  .item-time-badge {
+    color: #000000 !important;
+    font-weight: 800 !important;
+  }
+
+  .item-time-text {
+    font-size: 8.5pt !important;
+    color: #000000 !important;
+  }
+
+  .flight-node-card,
+  .hotel-node-card,
+  .timeline-node {
+    background: #ffffff !important;
+    border: 1px solid #888888 !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+
+  .flight-node-title,
+  .hotel-node-title,
+  .item-title {
+    color: #000000 !important;
+    font-weight: 700 !important;
+  }
+
+  .flight-node-sub,
+  .hotel-node-sub,
+  .item-desc {
+    color: #333333 !important;
+  }
+
+  .speech-bubble-card {
+    background: #f8f8f8 !important;
+    border: 1px solid #aaaaaa !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+
+  .flight-live-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
+  }
+
+  .flight-grid-item {
+    border: 1px solid #cccccc !important;
+    background: #ffffff !important;
+    padding: 2px 4px !important;
+  }
+
+  .flight-grid-label {
+    color: #555555 !important;
+    font-size: 7pt !important;
+  }
+
+  .flight-grid-val {
+    color: #000000 !important;
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+  }
+
+  .bubble-warning-box,
+  .bubble-parking-tag,
+  .bubble-cost-tag {
+    background: #ffffff !important;
+    border: 1px solid #999999 !important;
+    color: #000000 !important;
+    font-size: 7.5pt !important;
+    padding: 3px 5px !important;
+  }
+}
