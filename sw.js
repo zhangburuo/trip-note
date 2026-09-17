@@ -1,25 +1,32 @@
 // Trip Note Service Worker - Offline Cache & Fast Launch
-const CACHE_NAME = 'trip-note-cache-v37.2';
+const CACHE_NAME = 'trip-note-cache-v37.3';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './css/main.css?v=37.2',
-  './css/components.css?v=37.2',
-  './css/animations.css?v=37.2',
-  './js/data.js?v=37.2',
-  './js/maps.js?v=37.2',
-  './js/weather.js?v=37.2',
-  './js/app.js?v=37.2'
+  './css/main.css?v=37.3',
+  './css/components.css?v=37.3',
+  './css/animations.css?v=37.3',
+  './js/data.js?v=37.3',
+  './js/maps.js?v=37.3',
+  './js/weather.js?v=37.3',
+  './js/app.js?v=37.3'
 ];
 
+self.addEventListener('message', event => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(PRECACHE_ASSETS).catch(err => {
         console.warn('Pre-cache partial fail:', err);
       });
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -40,7 +47,12 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
   // If page navigation (HTML), try Network-First so user always gets the latest version when connected
-  if (event.request.mode === 'navigate' || url.pathname.endsWith('index.html') || url.pathname.endsWith('/')) {
+  const isNavigation = event.request.mode === 'navigate' ||
+    url.pathname.endsWith('index.html') ||
+    url.pathname.endsWith('/') ||
+    url.pathname.endsWith('/trip-note');
+
+  if (isNavigation) {
     event.respondWith(
       fetch(event.request).then(networkResponse => {
         if (networkResponse && networkResponse.status === 200) {
