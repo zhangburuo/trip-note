@@ -20,9 +20,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
   
   <!-- CSS Stylesheets -->
-  <link rel="stylesheet" href="css/main.css?v=37.0">
-  <link rel="stylesheet" href="css/components.css?v=37.0">
-  <link rel="stylesheet" href="css/animations.css?v=37.0">
+  <link rel="stylesheet" href="css/main.css?v=37.1">
+  <link rel="stylesheet" href="css/components.css?v=37.1">
+  <link rel="stylesheet" href="css/animations.css?v=37.1">
 </head>
 <body>
 
@@ -31,7 +31,7 @@
     <!-- Hero & Header Section -->
     <header class="app-header">
       <div class="hero-banner animate-fade-in">
-        <div class="brand-badge">✨ Trip Note Vibe Assistant v37.0 · Phase 3 旅途质感与应急保障</div>
+        <div class="brand-badge">✨ Trip Note Vibe Assistant v37.1 · 移动端体验优化</div>
         <h1 class="app-title">澳新 11 日度假行程规划</h1>
         <p class="app-subtitle">出行人员：ZHANG/BURUO, ZHANG/LIYUAN | 2026.09.27 - 10.07 | 涵盖布里斯班过境慢游、新西兰南岛冰川自驾与悉尼海港都市。</p>
         
@@ -64,7 +64,10 @@
           <div class="tz-clock-item" id="tz-beijing">
             <span class="tz-clock-flag">🇨🇳</span>
             <div class="tz-clock-content">
-              <div class="tz-clock-city">北京时间 <span class="tz-clock-tag">UTC+8 基准</span></div>
+              <div class="tz-clock-city">
+                <span class="tz-city-name">北京</span><span class="tz-city-suffix">时间</span>
+                <span class="tz-clock-tag">UTC+8<span class="tz-tag-suffix"> 基准</span></span>
+              </div>
               <div class="tz-clock-time" id="tz-beijing-time">--:--</div>
               <div class="tz-clock-date" id="tz-beijing-date">--/-- 周-</div>
             </div>
@@ -73,7 +76,10 @@
           <div class="tz-clock-item" id="tz-sydney">
             <span class="tz-clock-flag">🇦🇺</span>
             <div class="tz-clock-content">
-              <div class="tz-clock-city">悉尼时间 <span class="tz-clock-tag" id="tz-sydney-diff">+2h</span></div>
+              <div class="tz-clock-city">
+                <span class="tz-city-name">悉尼</span><span class="tz-city-suffix">时间</span>
+                <span class="tz-clock-tag" id="tz-sydney-diff">+2h</span>
+              </div>
               <div class="tz-clock-time" id="tz-sydney-time">--:--</div>
               <div class="tz-clock-date" id="tz-sydney-date">--/-- 周-</div>
             </div>
@@ -82,7 +88,10 @@
           <div class="tz-clock-item" id="tz-nz">
             <span class="tz-clock-flag">🇳🇿</span>
             <div class="tz-clock-content">
-              <div class="tz-clock-city">基督城时间 <span class="tz-clock-tag" id="tz-nz-diff">+5h</span></div>
+              <div class="tz-clock-city">
+                <span class="tz-city-name">基督城</span><span class="tz-city-suffix">时间</span>
+                <span class="tz-clock-tag" id="tz-nz-diff">+5h</span>
+              </div>
               <div class="tz-clock-time" id="tz-nz-time">--:--</div>
               <div class="tz-clock-date" id="tz-nz-date">--/-- 周-</div>
             </div>
@@ -354,10 +363,25 @@
 
       <!-- Category Filter Tabs -->
       <div class="checklist-category-tabs" id="checklist-category-tabs">
-        <button class="checklist-tab active" data-cat="all" onclick="filterChecklistCategory('all', event)">全部项</button>
-        <button class="checklist-tab" data-cat="docs" onclick="filterChecklistCategory('docs', event)">🛂 必备证件</button>
-        <button class="checklist-tab" data-cat="gear" onclick="filterChecklistCategory('gear', event)">🎒 关键行李</button>
-        <button class="checklist-tab" data-cat="customs" onclick="filterChecklistCategory('customs', event)">⚠️ 海关避坑</button>
+        <button class="checklist-tab active" data-cat="all" onclick="filterChecklistCategory('all', event)">
+          <span class="tab-txt-full">全部清单</span>
+          <span class="tab-txt-mobile">全部</span>
+        </button>
+        <button class="checklist-tab" data-cat="docs" onclick="filterChecklistCategory('docs', event)">
+          <span>🛂</span>
+          <span class="tab-txt-full">必备证件</span>
+          <span class="tab-txt-mobile">证件</span>
+        </button>
+        <button class="checklist-tab" data-cat="gear" onclick="filterChecklistCategory('gear', event)">
+          <span>🎒</span>
+          <span class="tab-txt-full">关键行李</span>
+          <span class="tab-txt-mobile">行李</span>
+        </button>
+        <button class="checklist-tab" data-cat="customs" onclick="filterChecklistCategory('customs', event)">
+          <span>⚠️</span>
+          <span class="tab-txt-full">海关避坑</span>
+          <span class="tab-txt-mobile">海关</span>
+        </button>
       </div>
 
       <!-- Checklist Items List -->
@@ -470,10 +494,10 @@
   </div>
 
   <!-- JavaScript App Logic -->
-  <script src="js/data.js?v=37.0"></script>
-  <script src="js/maps.js?v=37.0"></script>
-  <script src="js/weather.js?v=37.0"></script>
-  <script src="js/app.js?v=37.0"></script>
+  <script src="js/data.js?v=37.1"></script>
+  <script src="js/maps.js?v=37.1"></script>
+  <script src="js/weather.js?v=37.1"></script>
+  <script src="js/app.js?v=37.1"></script>
 
   <!-- PWA Service Worker Registration -->
   <script>
