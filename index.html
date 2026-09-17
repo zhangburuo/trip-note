@@ -20,9 +20,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
   
   <!-- CSS Stylesheets -->
-  <link rel="stylesheet" href="css/main.css?v=37.3">
-  <link rel="stylesheet" href="css/components.css?v=37.3">
-  <link rel="stylesheet" href="css/animations.css?v=37.3">
+  <link rel="stylesheet" href="css/main.css?v=37.4">
+  <link rel="stylesheet" href="css/components.css?v=37.4">
+  <link rel="stylesheet" href="css/animations.css?v=37.4">
 </head>
 <body>
 
@@ -31,7 +31,7 @@
     <!-- Hero & Header Section -->
     <header class="app-header">
       <div class="hero-banner animate-fade-in">
-        <div class="brand-badge" id="brand-badge-version" title="点击可快速刷新缓存">✨ Trip Note Vibe Assistant v37.3 · UI 极简纯净版</div>
+        <div class="brand-badge" id="brand-badge-version" title="点击可快速刷新缓存">✨ Trip Note Vibe Assistant v37.4 · UI 极简纯净版</div>
         <h1 class="app-title">澳新 11 日度假行程规划</h1>
         <p class="app-subtitle">出行人员：ZHANG/BURUO, ZHANG/LIYUAN | 2026.09.27 - 10.07 | 涵盖布里斯班过境慢游、新西兰南岛冰川自驾与悉尼海港都市。</p>
         
@@ -403,59 +403,84 @@
       </div>
 
       <div class="currency-converter-body">
-        <!-- Quick Preset Amount Chips -->
-        <div class="currency-quick-chips">
-          <span class="quick-chip-label">快捷预设:</span>
-          <button class="curr-chip" onclick="setCurrencyPreset(10, event)">$10</button>
-          <button class="curr-chip" onclick="setCurrencyPreset(25, event)">$25</button>
-          <button class="curr-chip" onclick="setCurrencyPreset(50, event)">$50</button>
-          <button class="curr-chip" onclick="setCurrencyPreset(100, event)">$100</button>
-          <button class="curr-chip" onclick="setCurrencyPreset(200, event)">$200</button>
-          <button class="curr-chip" onclick="setCurrencyPreset(500, event)">$500</button>
+        <!-- Quick Preset Amount Section with Currency Target Selector -->
+        <div class="currency-preset-section">
+          <div class="currency-preset-header">
+            <span class="quick-chip-label">快捷输入目标：</span>
+            <div class="curr-target-tabs" id="curr-target-tabs" role="tablist">
+              <button type="button" class="curr-target-tab is-active" data-curr="NZD" onclick="selectActiveCurrency('NZD', event)" role="tab" aria-selected="true">
+                <span class="pill-flag">🇳🇿</span> NZD
+              </button>
+              <button type="button" class="curr-target-tab" data-curr="AUD" onclick="selectActiveCurrency('AUD', event)" role="tab" aria-selected="false">
+                <span class="pill-flag">🇦🇺</span> AUD
+              </button>
+              <button type="button" class="curr-target-tab" data-curr="CNY" onclick="selectActiveCurrency('CNY', event)" role="tab" aria-selected="false">
+                <span class="pill-flag">🇨🇳</span> CNY
+              </button>
+            </div>
+          </div>
+
+          <div class="currency-quick-chips" id="currency-preset-chips">
+            <button type="button" class="curr-chip" onclick="setCurrencyPreset(10, event)">$10</button>
+            <button type="button" class="curr-chip" onclick="setCurrencyPreset(25, event)">$25</button>
+            <button type="button" class="curr-chip is-selected" onclick="setCurrencyPreset(50, event)">$50</button>
+            <button type="button" class="curr-chip" onclick="setCurrencyPreset(100, event)">$100</button>
+            <button type="button" class="curr-chip" onclick="setCurrencyPreset(200, event)">$200</button>
+            <button type="button" class="curr-chip" onclick="setCurrencyPreset(500, event)">$500</button>
+          </div>
         </div>
 
         <!-- 3-Way Currency Inputs List -->
         <div class="currency-inputs-list">
           <!-- NZD Row -->
-          <div class="currency-input-row" data-curr="NZD">
+          <div class="currency-input-row is-active-curr" data-curr="NZD" onclick="selectActiveCurrency('NZD', event)">
             <div class="curr-row-left">
               <span class="curr-flag">🇳🇿</span>
               <div class="curr-name-box">
-                <span class="curr-code">NZD</span>
+                <div class="curr-code-line">
+                  <span class="curr-code">NZD</span>
+                  <span class="curr-active-badge">当前输入</span>
+                </div>
                 <span class="curr-desc">新西兰元</span>
               </div>
             </div>
-            <div class="curr-input-wrap">
+            <div class="curr-input-wrap" onclick="event.stopPropagation()">
               <span class="curr-sym">$</span>
               <input type="number" step="any" id="curr-input-nzd" class="currency-number-input" placeholder="0.00" inputmode="decimal">
             </div>
           </div>
 
           <!-- AUD Row -->
-          <div class="currency-input-row" data-curr="AUD">
+          <div class="currency-input-row" data-curr="AUD" onclick="selectActiveCurrency('AUD', event)">
             <div class="curr-row-left">
               <span class="curr-flag">🇦🇺</span>
               <div class="curr-name-box">
-                <span class="curr-code">AUD</span>
+                <div class="curr-code-line">
+                  <span class="curr-code">AUD</span>
+                  <span class="curr-active-badge">当前输入</span>
+                </div>
                 <span class="curr-desc">澳大利亚元</span>
               </div>
             </div>
-            <div class="curr-input-wrap">
+            <div class="curr-input-wrap" onclick="event.stopPropagation()">
               <span class="curr-sym">$</span>
               <input type="number" step="any" id="curr-input-aud" class="currency-number-input" placeholder="0.00" inputmode="decimal">
             </div>
           </div>
 
           <!-- CNY Row -->
-          <div class="currency-input-row" data-curr="CNY">
+          <div class="currency-input-row" data-curr="CNY" onclick="selectActiveCurrency('CNY', event)">
             <div class="curr-row-left">
               <span class="curr-flag">🇨🇳</span>
               <div class="curr-name-box">
-                <span class="curr-code">CNY</span>
+                <div class="curr-code-line">
+                  <span class="curr-code">CNY</span>
+                  <span class="curr-active-badge">当前输入</span>
+                </div>
                 <span class="curr-desc">人民币</span>
               </div>
             </div>
-            <div class="curr-input-wrap">
+            <div class="curr-input-wrap" onclick="event.stopPropagation()">
               <span class="curr-sym">¥</span>
               <input type="number" step="any" id="curr-input-cny" class="currency-number-input" placeholder="0.00" inputmode="decimal">
             </div>
@@ -489,10 +514,10 @@
   </div>
 
   <!-- JavaScript App Logic -->
-  <script src="js/data.js?v=37.3"></script>
-  <script src="js/maps.js?v=37.3"></script>
-  <script src="js/weather.js?v=37.3"></script>
-  <script src="js/app.js?v=37.3"></script>
+  <script src="js/data.js?v=37.4"></script>
+  <script src="js/maps.js?v=37.4"></script>
+  <script src="js/weather.js?v=37.4"></script>
+  <script src="js/app.js?v=37.4"></script>
 
   <!-- PWA Service Worker Registration & Instant Auto-Update -->
   <script>

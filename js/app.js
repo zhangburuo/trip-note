@@ -2048,6 +2048,25 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   let currentRates = { ...defaultRates };
+  let activeCurrency = 'NZD';
+
+  const CURRENCY_PRESETS = {
+    NZD: {
+      symbol: '$',
+      label: '新西兰元',
+      values: [10, 25, 50, 100, 200, 500]
+    },
+    AUD: {
+      symbol: '$',
+      label: '澳大利亚元',
+      values: [10, 25, 50, 100, 200, 500]
+    },
+    CNY: {
+      symbol: '¥',
+      label: '人民币',
+      values: [10, 50, 100, 200, 500, 1000]
+    }
+  };
 
   function loadCachedCurrencyRates() {
     try {
@@ -2082,15 +2101,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function renderCurrencyPresetChips(currCode) {
+    const container = document.getElementById('currency-preset-chips');
+    if (!container) return;
+    const config = CURRENCY_PRESETS[currCode] || CURRENCY_PRESETS.NZD;
+    
+    // Check current input value to highlight matched chip
+    const activeInput = document.getElementById(`curr-input-${currCode.toLowerCase()}`);
+    const currentVal = activeInput ? parseFloat(activeInput.value) : null;
+
+    container.innerHTML = config.values.map(val => {
+      const isSelected = !isNaN(currentVal) && Math.abs(currentVal - val) < 0.001;
+      return `<button type="button" class="curr-chip ${isSelected ? 'is-selected' : ''}" onclick="setCurrencyPreset(${val}, event)">${config.symbol}${val}</button>`;
+    }).join('');
+  }
+
+  function highlightSelectedPresetChip(currCode, amount) {
+    const container = document.getElementById('currency-preset-chips');
+    if (!container) return;
+    const valNum = parseFloat(amount);
+    container.querySelectorAll('.curr-chip').forEach(chip => {
+      const chipText = chip.textContent.replace(/[^0-9.]/g, '');
+      const chipVal = parseFloat(chipText);
+      chip.classList.toggle('is-selected', !isNaN(valNum) && Math.abs(chipVal - valNum) < 0.001);
+    });
+  }
+
+  window.selectActiveCurrency = function(code, event, shouldFocusInput = false) {
+    if (event) event.stopPropagation();
+    activeCurrency = (code || 'NZD').toUpperCase();
+
+    // 1. Update target tabs
+    const targetTabs = document.querySelectorAll('.curr-target-tab');
+    targetTabs.forEach(tab => {
+      const isThis = tab.getAttribute('data-curr') === activeCurrency;
+      tab.classList.toggle('is-active', isThis);
+      tab.setAttribute('aria-selected', isThis ? 'true' : 'false');
+    });
+
+    // 2. Update currency input rows
+    const inputRows = document.querySelectorAll('.currency-input-row');
+    inputRows.forEach(row => {
+      const isThis = row.getAttribute('data-curr') === activeCurrency;
+      row.classList.toggle('is-active-curr', isThis);
+    });
+
+    // 3. Re-render preset chips for active currency
+    renderCurrencyPresetChips(activeCurrency);
+
+    // 4. Optionally focus input
+    if (shouldFocusInput) {
+      const input = document.getElementById(`curr-input-${activeCurrency.toLowerCase()}`);
+      if (input) input.focus();
+    }
+  };
+
   window.openCurrencyModal = function(event) {
     if (event) event.stopPropagation();
     const modal = document.getElementById('currency-modal');
     if (modal) {
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
-      const nzdInput = document.getElementById('curr-input-nzd');
-      if (nzdInput && (!nzdInput.value || Number(nzdInput.value) === 0)) {
-        window.setCurrencyPreset(50);
+      window.selectActiveCurrency(activeCurrency || 'NZD');
+      const activeInput = document.getElementById(`curr-input-${activeCurrency.toLowerCase()}`);
+      if (activeInput && (!activeInput.value || Number(activeInput.value) === 0)) {
+        const defaultAmount = activeCurrency === 'CNY' ? 100 : 50;
+        window.setCurrencyPreset(defaultAmount);
       }
     }
   };
@@ -2113,12 +2189,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.setCurrencyPreset = function(nzdAmount, event) {
+  window.setCurrencyPreset = function(amount, event) {
     if (event) event.stopPropagation();
-    const nzdInput = document.getElementById('curr-input-nzd');
-    if (nzdInput) {
-      nzdInput.value = nzdAmount;
-      syncCurrencyValues('NZD', nzdAmount);
+    const targetCode = activeCurrency || 'NZD';
+    const targetInput = document.getElementById(`curr-input-${targetCode.toLowerCase()}`);
+    if (targetInput) {
+      targetInput.value = amount;
+      syncCurrencyValues(targetCode, amount);
+      highlightSelectedPresetChip(targetCode, amount);
     }
   };
 
@@ -2132,6 +2210,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sourceCode !== 'NZD' && nzdInput) nzdInput.value = '';
       if (sourceCode !== 'AUD' && audInput) audInput.value = '';
       if (sourceCode !== 'CNY' && cnyInput) cnyInput.value = '';
+      highlightSelectedPresetChip(sourceCode, null);
       return;
     }
 
@@ -2151,16 +2230,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sourceCode !== 'NZD' && nzdInput) nzdInput.value = calcNzd;
     if (sourceCode !== 'AUD' && audInput) audInput.value = calcAud;
     if (sourceCode !== 'CNY' && cnyInput) cnyInput.value = calcCny;
+
+    highlightSelectedPresetChip(sourceCode, amount);
   }
 
   // Setup Currency Inputs listeners
   ['nzd', 'aud', 'cny'].forEach(code => {
+    const upper = code.toUpperCase();
     const input = document.getElementById(`curr-input-${code}`);
     if (input) {
       input.addEventListener('input', (e) => {
-        syncCurrencyValues(code.toUpperCase(), e.target.value);
+        if (activeCurrency !== upper) {
+          window.selectActiveCurrency(upper, null, false);
+        }
+        syncCurrencyValues(upper, e.target.value);
       });
       input.addEventListener('focus', function() {
+        if (activeCurrency !== upper) {
+          window.selectActiveCurrency(upper, null, false);
+        }
         this.select();
       });
     }
@@ -2185,9 +2273,9 @@ document.addEventListener('DOMContentLoaded', () => {
           timestamp: Date.now()
         }));
         updateRateBannerUI(`✅ 实时汇率 (${new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })})`);
-        const nzdInput = document.getElementById('curr-input-nzd');
-        if (nzdInput && nzdInput.value) {
-          syncCurrencyValues('NZD', nzdInput.value);
+        const activeInput = document.getElementById(`curr-input-${activeCurrency.toLowerCase()}`);
+        if (activeInput && activeInput.value) {
+          syncCurrencyValues(activeCurrency, activeInput.value);
         }
         if (typeof showToast === 'function') showToast('💱 汇率数据已成功更新为最新牌价！');
         return;
