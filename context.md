@@ -153,4 +153,4 @@ interface TimelineItem {
 2. **每次修改后**：必须在上面的 **`📜 4. 每次更新历史记录 (Version History Log)`** 表格中追加记录当次更新的版本号、日期与核心改动。
 3. **严格遵守 `subSpots` 数据规则**：未来录入新行程节点时，**严禁**将公共卫生间、停车场、特色菜品/菜单、电影背景文化描述、同建筑设施单独作为 `subSpots` 渲染导航按钮；单实体节点一律不带 `subSpots`，由主卡片渲染独立操作栏。
 4. **组件解耦**：所有数据均存储于 `js/data.js` 中，通过 `tripStore` 进行集中式状态管理。
-5. **打开/预览方式**：采用原生 HTML + JS + CSS 结构，可以直接在标准浏览器中以静态页面模式打开 (`index.html`) 或通过 local server (`http://localhost:8080`) 预览。
+5. **打开/预览/部署方式**：采用原生 HTML + JS + CSS 结构，可以直接在标准浏览器中以静态页面模式打开 (`index.html`) 或通过 local server (`http://localhost:8088`) 预览；线上仓库为 `https://github.com/zhangburuo/trip-note`，通过 GitHub Pages 发布在 `https://zhangburuo.github.io/trip-note/`。
