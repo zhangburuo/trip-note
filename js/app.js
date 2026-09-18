@@ -721,6 +721,260 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  // Helper Parser: Smart Dining & Food Extractor
+  function parseFoodInfo(item) {
+    const text = `${item.name || ''} ${item.desc || ''} ${item.tips || ''}`;
+
+    // Category / Vibe badge
+    let vibeIcon = '🍽️';
+    let vibeName = '特色餐饮';
+    if (/肉派|烘焙|Bakehouse|Bakery/i.test(text)) {
+      vibeIcon = '🥧';
+      vibeName = '手工烘焙 · 补给快修';
+    } else if (/日料|三文鱼|Kohan|刺身|Salmon/i.test(text)) {
+      vibeIcon = '🍣';
+      vibeName = '湖景日料 · 水产刺身';
+    } else if (/酒吧|微醺|鸡尾酒|精酿|Rooftop|Bar|Beer/i.test(text)) {
+      vibeIcon = '🍸';
+      vibeName = '景观酒吧 · 水岸微醺';
+    } else if (/集市|美食广场|Food Court|Riverside Market|汉堡|Burgers|轻食|便当/i.test(text)) {
+      vibeIcon = '🍔';
+      vibeName = '水岸轻食 · 美食集市';
+    } else if (/晚宴|Twenty Seven Steps|Ma Maison|正餐|餐酒馆/i.test(text)) {
+      vibeIcon = '🍷';
+      vibeName = '精致晚宴 · 招牌主餐';
+    } else if (/Brunch|早午餐|咖啡|Espresso|Denim\s*Co|Child\s*Sister|C1/i.test(text)) {
+      vibeIcon = '☕';
+      vibeName = '澳式早午餐 · 咖啡';
+    }
+
+    // Reservation status
+    let reserveClass = 'is-free';
+    let reserveText = '⚡ 免预约 · 随到随享';
+    if (/提前\s*2~3\s*周|建议提前预约|需提前预约|已预约|提前预约/i.test(text)) {
+      reserveClass = 'is-required';
+      reserveText = '📅 热门需提前预约';
+    } else if (/机动|弹性|视饥饿程度/i.test(text)) {
+      reserveClass = 'is-flex';
+      reserveText = '💡 弹性餐饮 · 机动选择';
+    }
+
+    // Cost Pill
+    let costChip = item.cost ? item.cost.split('(')[0].trim() : '';
+    if (!costChip) {
+      const m = text.match(/(~?\$[0-9]+(?:\s*-\s*\$?[0-9]+)?\s*(?:AUD|NZD)(?:\/[^\s，。)）]+)?)/i);
+      if (m) costChip = m[1].trim();
+    }
+
+    // Must-try / Signature Dish Tags
+    const mustTry = [];
+    const dishCandidates = [
+      { pattern: /高山.*鹿肉|鹿肉/i, tag: '🦌 高山鹿肉' },
+      { pattern: /鸭胸|煎鸭胸/i, tag: '🦆 脆皮煎鸭胸' },
+      { pattern: /高山三文鱼|三文鱼饭|三文鱼刺身/i, tag: '🐟 高山纯净三文鱼' },
+      { pattern: /鲑鱼派/i, tag: '🥧 招牌鲑鱼派' },
+      { pattern: /牛肉派/i, tag: '🥩 现烤牛肉派' },
+      { pattern: /白葡萄酒|长相思|Sauvignon/i, tag: '🍷 新西兰白葡萄酒' },
+      { pattern: /Fish\s*&\s*Chips|炸鱼薯条/i, tag: '🍟 现炸 Fish & Chips' },
+      { pattern: /手冲|Espresso|澳白|Flat White/i, tag: '☕ 精品咖啡' },
+      { pattern: /鸡尾酒|特调/i, tag: '🍸 港湾特调鸡尾酒' },
+      { pattern: /精酿|精酿啤酒/i, tag: '🍺 澳洲特色精酿' },
+      { pattern: /汉堡|Betty'?s\s*Burgers/i, tag: '🍔 招牌安格斯汉堡' }
+    ];
+    dishCandidates.forEach(cand => {
+      if (cand.pattern.test(text) && !mustTry.includes(cand.tag)) {
+        mustTry.push(cand.tag);
+      }
+    });
+
+    // Booking Website URL
+    let bookingUrl = null;
+    const urlMatch = text.match(/\b([a-z0-9-]+\.(?:co\.nz|com\.au|com))\b/i);
+    if (urlMatch) {
+      bookingUrl = `https://${urlMatch[1]}`;
+    }
+
+    return {
+      vibeIcon,
+      vibeName,
+      reserveClass,
+      reserveText,
+      costChip,
+      mustTry,
+      bookingUrl
+    };
+  }
+
+  // Helper Parser: Smart Attractions & Activities Extractor
+  function parseSpotInfo(item) {
+    const text = `${item.name || ''} ${item.desc || ''} ${item.tips || ''}`;
+
+    // Category badge
+    let catIcon = '📍';
+    let catName = '经典景点';
+    if (/徒步|Track|步道|Hooker Valley|Tasman Glacier|冰川/i.test(text)) {
+      catIcon = '🥾';
+      catName = '高山冰川徒步';
+    } else if (/观星|银河|暗夜/i.test(text)) {
+      catIcon = '🌌';
+      catName = '国际暗夜保护区观星';
+    } else if (/动物园|羊驼|Taronga|Featherdale|Alpaca|考拉|袋鼠/i.test(text)) {
+      catIcon = '🐨';
+      catName = '野生动物探访';
+    } else if (/观景台|Lookout|日落|全景|Mt John|巨石阵|Castle Hill|海湾|Pukaki/i.test(text)) {
+      catIcon = '🌅';
+      catName = '观景摄影地标';
+    } else if (/历史|大楼|教堂|海关|广场|歌剧院|植物园|雅芳河|市区|街区/i.test(text)) {
+      catIcon = '🏛️';
+      catName = '城市人文漫步';
+    } else if (/集市|商圈|Mall|Market|超市|采购|店铺/i.test(text)) {
+      catIcon = '🛍️';
+      catName = '特色集市商圈';
+    } else if (/入境|行李|寄存|值机|通关|安检/i.test(text)) {
+      catIcon = '🛂';
+      catName = '机场通关与手续';
+    }
+
+    // Cost / Admission Pill
+    let costChip = '🆓 免费游览';
+    let isFree = true;
+    if (item.cost && !/^\$0/i.test(item.cost)) {
+      costChip = `🎟️ ${item.cost.split('(')[0].trim()}`;
+      isFree = false;
+    }
+
+    // Gear & Weather Cautions
+    const gearTags = [];
+    if (/防风|保暖|羽绒服|外套/i.test(text)) {
+      gearTags.push({ icon: '🧥', text: '防风保暖衣物' });
+    }
+    if (/徒步鞋/i.test(text)) {
+      gearTags.push({ icon: '🥾', text: '防滑徒步鞋' });
+    }
+    if (/护照|SmartGate|闸机/i.test(text)) {
+      gearTags.push({ icon: '🛂', text: '电子护照自助通关' });
+    }
+    if (/无须参加观星团|自主观星/i.test(text)) {
+      gearTags.push({ icon: '✨', text: '自主漫步观星' });
+    }
+
+    return {
+      catIcon,
+      catName,
+      costChip,
+      isFree,
+      gearTags
+    };
+  }
+
+  // Helper Parser: Smart Lodging & Hotel Extractor
+  function parseHotelInfo(item) {
+    const text = `${item.name || ''} ${item.desc || ''} ${item.tips || ''}`;
+
+    let checkInTag = '';
+    let checkOutTag = '';
+    let isStaying = false;
+
+    if (item.checkInTime) {
+      if (/连住/i.test(item.checkInTime)) {
+        isStaying = true;
+        checkInTag = `🛌 ${item.checkInTime}`;
+      } else {
+        checkInTag = `🔑 ${item.checkInTime}`;
+      }
+    }
+    if (item.checkOutTime) {
+      checkOutTag = `🚪 ${item.checkOutTime}`;
+    }
+
+    let roomBadge = item.roomType || '';
+    if (!roomBadge) {
+      if (/公寓/i.test(item.name)) roomBadge = '湖景一室公寓';
+      else if (/旅馆|Motel/i.test(item.name)) roomBadge = '海滨汽车旅馆';
+      else if (/酒店/i.test(item.name)) roomBadge = '星级优选客房';
+      else roomBadge = '精选住宿客房';
+    }
+
+    const amenities = [];
+    if (item.parking) {
+      if (/免费/i.test(item.parking)) amenities.push({ icon: '🅿️', text: '住客专属免费车位' });
+      else amenities.push({ icon: '🅿️', text: '提供泊车/停车楼' });
+    } else {
+      amenities.push({ icon: '🅿️', text: '市区停车指引' });
+    }
+
+    if (/早餐|SAILMAKER/i.test(text)) {
+      amenities.push({ icon: '🍳', text: '含精选早餐' });
+    }
+    if (/钥匙箱|自助|密码/i.test(text)) {
+      amenities.push({ icon: '🔐', text: '密码箱自助入住' });
+    }
+
+    return {
+      checkInTag,
+      checkOutTag,
+      isStaying,
+      roomBadge,
+      amenities,
+      phone: item.phone || ''
+    };
+  }
+
+  // Helper Parser: Smart Flight & Boarding Pass Extractor
+  function parseFlightInfo(item) {
+    const text = `${item.name || ''} ${item.desc || ''} ${item.flightRoute || ''} ${item.terminal || ''}`;
+    let depCode = 'DEP', depCity = '出发地', arrCode = 'ARR', arrCity = '目的地';
+
+    if (/广州|CAN/i.test(text)) {
+      if (depCode === 'DEP') { depCode = 'CAN'; depCity = '广州白云'; }
+      else { arrCode = 'CAN'; arrCity = '广州白云'; }
+    }
+    if (/布里斯班|BNE/i.test(text)) {
+      if (depCode === 'DEP' && !/顺利降落|到达/i.test(item.name)) { depCode = 'BNE'; depCity = '布里斯班'; }
+      else { arrCode = 'BNE'; arrCity = '布里斯班'; }
+    }
+    if (/基督城|CHC/i.test(text)) {
+      if (depCode === 'DEP' && /启程|出发|起飞/.test(item.name)) { depCode = 'CHC'; depCity = '基督城'; }
+      else { arrCode = 'CHC'; arrCity = '基督城'; }
+    }
+    if (/悉尼|SYD/i.test(text)) {
+      if (depCode === 'DEP' && /启程|出发|第一程/.test(item.name)) { depCode = 'SYD'; depCity = '悉尼'; }
+      else { arrCode = 'SYD'; arrCity = '悉尼'; }
+    }
+    if (/香港|HKG/i.test(text)) {
+      if (depCode === 'DEP' && /第二程/.test(item.name)) { depCode = 'HKG'; depCity = '香港国际'; }
+      else { arrCode = 'HKG'; arrCity = '香港国际'; }
+    }
+    if (/北京|PEK|PKX/i.test(text)) {
+      arrCode = 'PEK'; arrCity = '北京首都';
+    }
+
+    // Arrival item handling (like item-2-1 落地布里斯班)
+    if (/落地|到达|降落/i.test(item.name)) {
+      depCode = 'CAN'; depCity = '广州白云';
+      arrCode = 'BNE'; arrCity = '布里斯班';
+    }
+
+    let duration = '跨洋直飞';
+    const durMatch = text.match(/(?:飞行约|飞行)\s*([0-9]+(?:\.[0-9]+)?\s*(?:小时|h)?\s*[0-9]*\s*分?(?:钟)?)/i);
+    if (durMatch) duration = durMatch[1].trim();
+
+    return {
+      depCode,
+      depCity,
+      arrCode,
+      arrCity,
+      duration,
+      flightCode: item.flightCode || item.name,
+      flightStatus: item.flightStatus || '🟢 计划/准点',
+      terminal: item.terminal || '看即时大牌',
+      gate: item.gate || '待公布',
+      boardingTime: item.boardingTime || '未公布',
+      estDeparture: item.estDeparture || item.time,
+      estArrival: item.estArrival || '准点'
+    };
+  }
+
   // Progressive Disclosure Drawer Renderer
   function renderCardDetailDrawerHtml(itemId, { desc, tips, uberBackup, pitstops, extraHtml = '' }) {
     const hasDesc = !!desc && desc.trim().length > 0;
@@ -920,117 +1174,153 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
         }
 
-        // Flight Item Node Card (Primary: Name, Code, Route, Desc. Extension: Live Status Grid)
+        // Flight Item Node Card (V2 - Apple Boarding Pass & Airport Corridor)
         if (item.type === 'flight') {
-          const flightExtensionHtml = `
-            <div class="speech-bubble-card">
-              <div class="bubble-flight-header">
-                <span class="bubble-flight-title">📡 实时航班信息</span>
-                <span class="flight-status-chip">${item.flightStatus || '🟢 计划/准点'}</span>
+          const flInfo = parseFlightInfo(item);
+
+          const corridorHtml = `
+            <div class="flight-route-corridor">
+              <div class="flight-airport-box is-start">
+                <span class="flight-airport-code">${flInfo.depCode}</span>
+                <span class="flight-airport-name">${flInfo.depCity}</span>
               </div>
-              <div class="flight-live-grid" style="margin-top: 0.4rem;">
-                <div class="flight-grid-item">
-                  <span class="flight-grid-label">航站楼</span>
-                  <span class="flight-grid-val">${item.terminal || '看即时大牌'}</span>
-                </div>
-                <div class="flight-grid-item">
-                  <span class="flight-grid-label">登机口</span>
-                  <span class="flight-grid-val">${item.gate || '待更新'}</span>
-                </div>
-                <div class="flight-grid-item">
-                  <span class="flight-grid-label">登机时间</span>
-                  <span class="flight-grid-val">${item.boardingTime || '未公布'}</span>
-                </div>
-                <div class="flight-grid-item">
-                  <span class="flight-grid-label">预计起飞/到达</span>
-                  <span class="flight-grid-val">${item.estDeparture || item.time} ➔ ${item.estArrival || '准点'}</span>
+              <div class="flight-mid-track">
+                <span class="flight-duration-chip">⏱️ ${flInfo.duration}</span>
+                <div class="flight-mid-line">
+                  <span class="flight-mid-plane">✈️</span>
                 </div>
               </div>
-              ${parkingHtml}
-              ${costHtml}
-              ${tipsHtml}
+              <div class="flight-airport-box is-end">
+                <span class="flight-airport-code">${flInfo.arrCode}</span>
+                <span class="flight-airport-name">${flInfo.arrCity}</span>
+              </div>
             </div>
           `;
+
+          const gridHtml = `
+            <div class="flight-v2-grid">
+              <div class="flight-grid-node">
+                <span class="flight-grid-label">航站楼</span>
+                <span class="flight-grid-value">${flInfo.terminal}</span>
+              </div>
+              <div class="flight-grid-node">
+                <span class="flight-grid-label">登机口</span>
+                <span class="flight-grid-value">${flInfo.gate}</span>
+              </div>
+              <div class="flight-grid-node">
+                <span class="flight-grid-label">登机时间</span>
+                <span class="flight-grid-value">${flInfo.boardingTime}</span>
+              </div>
+              <div class="flight-grid-node">
+                <span class="flight-grid-label">起落时刻</span>
+                <span class="flight-grid-value">${flInfo.estDeparture} ➔ ${flInfo.estArrival}</span>
+              </div>
+            </div>
+          `;
+
+          const drawerHtml = renderCardDetailDrawerHtml(item.id, {
+            desc: item.desc,
+            tips: item.tips
+          });
 
           return `
             <div class="timeline-row-grid timeline-item-type-flight ${activeItemClass} ${completedClass}" id="${itemRowId}">
               <div class="timeline-primary-col">
                 ${renderTimeBadgeHtml(item.time)}
                 <div class="item-content">
-                  <div class="flight-node-card">
-                    <div class="flight-header-line">
-                      <div style="display: flex; align-items: center; gap: 0.6rem;">
-                        <span style="font-size: 1.3rem;">✈️</span>
-                        <span class="flight-node-title">${item.name}</span>
+                  <div class="flight-card-v2 apple-glass-card">
+                    <div class="flight-v2-header">
+                      <div class="flight-code-group">
+                        <span class="flight-code-badge">✈️ ${flInfo.flightCode}</span>
                         ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
-                        <span class="flight-type-badge">${item.flightCode || '航班'}</span>
-                        ${isCurrentActiveItem ? `<span class="live-active-tag">🟢 进行中</span>` : ''}
+                        ${isCurrentActiveItem ? '<span class="live-active-tag">🟢 进行中</span>' : ''}
                       </div>
+                      <span class="flight-status-badge">${flInfo.flightStatus}</span>
                     </div>
-                    <div class="flight-node-sub">${item.flightRoute || ''} ${item.desc ? `· ${item.desc}` : ''}</div>
+
+                    ${corridorHtml}
+                    ${gridHtml}
+                    ${imageHtml}
+
+                    <div class="spot-actions">
+                      <a href="${dirUrl}" target="_blank" class="action-chip nav-btn interactive-hover" title="导航至出发航站楼">
+                        🧭 航站楼导航
+                      </a>
+                      <a href="${mapUrl}" target="_blank" class="action-chip interactive-hover" title="在地图上查看航站楼位置">
+                        📍 机场定位
+                      </a>
+                    </div>
+
+                    ${drawerHtml}
                   </div>
                 </div>
               </div>
               <div class="timeline-extension-col">
-                ${flightExtensionHtml}
+                ${extensionColHtml}
               </div>
             </div>
           `;
         }
 
-        // Hotel Item Node Card (Primary: Name, Room, Phone, Actions. Extension: Check-in/out info)
+        // Hotel Item Node Card (V2 - Apple Liquid Glass & Luxury Key Pass)
         if (item.type === 'hotel') {
-          let hotelTimeTags = '';
-          if (item.checkInTime || item.checkOutTime) {
-            hotelTimeTags = `
-              <div class="bubble-hotel-header">
-                <span class="bubble-hotel-title">🏨 入住与退房提醒</span>
-              </div>
-              <div style="margin-top: 0.4rem; display: flex; flex-wrap: wrap; gap: 0.4rem;">
-                ${item.checkInTime ? `<span class="bubble-hotel-time-tag">🔑 ${item.checkInTime}</span>` : ''}
-                ${item.checkOutTime ? `<span class="bubble-hotel-time-tag">🚪 ${item.checkOutTime}</span>` : ''}
+          const hInfo = parseHotelInfo(item);
+
+          let timeCorridorHtml = '';
+          if (hInfo.checkInTag || hInfo.checkOutTag) {
+            timeCorridorHtml = `
+              <div class="hotel-time-corridor">
+                ${hInfo.checkInTag ? `<span class="hotel-time-item ${hInfo.isStaying ? 'is-staying' : 'is-checkin'}">${hInfo.checkInTag}</span>` : ''}
+                ${hInfo.checkOutTag ? `<span class="hotel-time-item is-checkout">${hInfo.checkOutTag}</span>` : ''}
               </div>
             `;
           }
 
-          const hotelExtensionHtml = `
-            <div class="speech-bubble-card">
-              ${hotelTimeTags}
-              ${parkingHtml}
-              ${costHtml}
-              ${tipsHtml}
-              ${pitstopsHtml}
-            </div>
-          `;
+          let amenitiesHtml = '';
+          if (hInfo.amenities && hInfo.amenities.length > 0) {
+            const chips = hInfo.amenities.map(a => `<span class="hotel-fac-chip">${a.icon} ${a.text}</span>`).join('');
+            amenitiesHtml = `<div class="hotel-facility-chips">${chips}</div>`;
+          }
+
+          const callBtnHtml = hInfo.phone ? `
+            <a href="tel:${hInfo.phone}" class="action-chip hotel-call-btn interactive-hover" title="一键拨打酒店前台电话">
+              📞 拨打电话
+            </a>
+          ` : '';
+
+          const drawerHtml = renderCardDetailDrawerHtml(item.id, {
+            desc: item.desc,
+            tips: item.tips,
+            extraHtml: item.parking ? `
+              <div class="drawer-parking-block">
+                <div class="drawer-section-title">🅿️ 泊车与车位详情</div>
+                <div>${item.parking}</div>
+              </div>
+            ` : ''
+          });
 
           return `
             <div class="timeline-row-grid timeline-item-type-hotel ${activeItemClass} ${completedClass}" id="${itemRowId}">
               <div class="timeline-primary-col">
                 ${renderTimeBadgeHtml(item.time)}
                 <div class="item-content">
-                  <div class="hotel-node-card">
-                    <div class="hotel-header-line">
-                      <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <span style="font-size: 1.4rem;">🏨</span>
-                        <div>
-                          <div class="hotel-node-title">
-                            ${item.name} 
-                            ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
-                            ${isCurrentActiveItem ? `<span class="live-active-tag">🟢 当前焦点</span>` : ''}
-                          </div>
-                          <div class="hotel-node-sub">
-                            ${item.roomType ? `<span>${item.roomType}</span>` : ''}
-                            ${item.phone ? ` · 📞 ${item.phone}` : ''}
-                            ${item.desc ? ` · <span>${item.desc}</span>` : ''}
-                          </div>
-                        </div>
+                  <div class="hotel-card-v2 apple-glass-card">
+                    <div class="hotel-v2-header">
+                      <div class="hotel-v2-title-group">
+                        <span style="font-size: 1.25rem;">🏨</span>
+                        <span class="hotel-v2-title">${item.name}</span>
+                        ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
+                        ${isCurrentActiveItem ? '<span class="live-active-tag">🟢 当前焦点</span>' : ''}
                       </div>
+                      ${hInfo.roomBadge ? `<span class="hotel-room-badge">🛏️ ${hInfo.roomBadge}</span>` : ''}
                     </div>
 
+                    ${timeCorridorHtml}
+                    ${amenitiesHtml}
                     ${imageHtml}
 
                     <div class="spot-actions">
-                      <a href="${dirUrl}" target="_blank" class="action-chip interactive-hover" title="导航至酒店">
+                      <a href="${dirUrl}" target="_blank" class="action-chip nav-btn interactive-hover" title="导航至酒店">
                         🧭 导航
                       </a>
                       <a href="${mapUrl}" target="_blank" class="action-chip interactive-hover" title="在地图上查看坐标">
@@ -1039,12 +1329,15 @@ document.addEventListener('DOMContentLoaded', () => {
                       <a href="${taUrl}" target="_blank" class="action-chip ta-btn interactive-hover" title="在猫途鹰 TripAdvisor 查看住客评分与对比">
                         🦉 猫途鹰
                       </a>
+                      ${callBtnHtml}
                     </div>
+
+                    ${drawerHtml}
                   </div>
                 </div>
               </div>
               <div class="timeline-extension-col">
-                ${hotelExtensionHtml}
+                ${extensionColHtml}
               </div>
             </div>
           `;
@@ -1279,21 +1572,133 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
         }
 
-        // Standard Spot / Food Item Node Card
+        // Dedicated Food Item Node Card (V2 - Apple Liquid Glass & Fine Dining)
+        if (item.type === 'food') {
+          const fInfo = parseFoodInfo(item);
+
+          let mustTryHtml = '';
+          if (fInfo.mustTry && fInfo.mustTry.length > 0) {
+            const chips = fInfo.mustTry.map(d => `<span class="food-try-chip">${d}</span>`).join('');
+            mustTryHtml = `
+              <div class="food-must-try-strip">
+                <span class="food-must-try-label">🍽️ 招牌必尝:</span>
+                ${chips}
+              </div>
+            `;
+          }
+
+          const bookingBtnHtml = fInfo.bookingUrl ? `
+            <a href="${fInfo.bookingUrl}" target="_blank" class="action-chip interactive-hover" style="background: rgba(244, 63, 94, 0.18); border-color: rgba(244, 63, 94, 0.4); color: #fecdd3;" title="访问官方预约网站">
+              🌐 官网预约
+            </a>
+          ` : '';
+
+          const drawerHtml = renderCardDetailDrawerHtml(item.id, {
+            desc: item.desc,
+            tips: item.tips,
+            extraHtml: item.parking ? `
+              <div class="drawer-parking-block">
+                <div class="drawer-section-title">🅿️ 就近停车与设施</div>
+                <div>${item.parking}</div>
+              </div>
+            ` : ''
+          });
+
+          return `
+            <div class="timeline-row-grid timeline-item-type-food ${activeItemClass} ${completedClass}" id="${itemRowId}">
+              <div class="timeline-primary-col">
+                ${renderTimeBadgeHtml(item.time)}
+                <div class="item-content">
+                  <div class="food-card-v2 apple-glass-card">
+                    <div class="food-v2-header">
+                      <div class="food-v2-title-group">
+                        <span style="font-size: 1.25rem;">${fInfo.vibeIcon}</span>
+                        <span class="food-v2-title">${item.name}</span>
+                        ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
+                        ${isCurrentActiveItem ? '<span class="live-active-tag">🟢 当前焦点</span>' : ''}
+                      </div>
+                      <div class="food-v2-pill-group">
+                        <span class="food-v2-badge">${fInfo.vibeName}</span>
+                        <span class="food-reserve-pill ${fInfo.reserveClass}">${fInfo.reserveText}</span>
+                        ${fInfo.costChip ? `<span class="food-cost-pill">💰 ${fInfo.costChip}</span>` : ''}
+                      </div>
+                    </div>
+
+                    ${mustTryHtml}
+                    ${imageHtml}
+                    ${subSpotsContainerHtml}
+
+                    <div class="spot-actions">
+                      <a href="${dirUrl}" target="_blank" class="action-chip nav-btn interactive-hover" title="导航至餐厅">
+                        🧭 导航
+                      </a>
+                      <a href="${mapUrl}" target="_blank" class="action-chip interactive-hover" title="在地图上查看坐标">
+                        📍 定位
+                      </a>
+                      <a href="${taUrl}" target="_blank" class="action-chip ta-btn interactive-hover" title="在猫途鹰 TripAdvisor 查看网友真实点评与攻略">
+                        🦉 猫途鹰
+                      </a>
+                      ${bookingBtnHtml}
+                    </div>
+
+                    ${drawerHtml}
+                  </div>
+                </div>
+              </div>
+              <div class="timeline-extension-col">
+                ${extensionColHtml}
+              </div>
+            </div>
+          `;
+        }
+
+        // Dedicated Spot / Attractions Node Card (V2 - Apple Liquid Glass & Nature Explorer)
+        const sInfo = parseSpotInfo(item);
+        const durationText = calculateTimeDuration(item.time);
+
+        let gearHtml = '';
+        if (sInfo.gearTags && sInfo.gearTags.length > 0) {
+          const chips = sInfo.gearTags.map(g => `<span class="spot-gear-chip">${g.icon} ${g.text}</span>`).join('');
+          gearHtml = `<div class="spot-metric-bar">${chips}</div>`;
+        }
+
+        const spotDrawerHtml = renderCardDetailDrawerHtml(item.id, {
+          desc: item.desc,
+          tips: item.tips,
+          extraHtml: item.parking ? `
+            <div class="drawer-parking-block">
+              <div class="drawer-section-title">🅿️ 停车场与公共设施</div>
+              <div>${item.parking}</div>
+            </div>
+          ` : ''
+        });
+
         return `
           <div class="timeline-row-grid timeline-item-type-${item.type || 'spot'} ${activeItemClass} ${completedClass}" id="${itemRowId}">
             <div class="timeline-primary-col">
               ${renderTimeBadgeHtml(item.time)}
               <div class="item-content">
-                <div class="spot-node-title">
-                  ${item.type === 'food' ? '🥩' : '📍'} ${item.name} 
-                  ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
-                  ${isCurrentActiveItem ? `<span class="live-active-tag">🟢 当前焦点</span>` : ''}
+                <div class="spot-card-v2 apple-glass-card">
+                  <div class="spot-v2-header">
+                    <div class="spot-v2-title-group">
+                      <span style="font-size: 1.25rem;">${sInfo.catIcon}</span>
+                      <span class="spot-v2-title">${item.name}</span>
+                      ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
+                      ${isCurrentActiveItem ? '<span class="live-active-tag">🟢 当前焦点</span>' : ''}
+                    </div>
+                    <div class="spot-metric-bar">
+                      <span class="spot-v2-badge">${sInfo.catName}</span>
+                      ${durationText ? `<span class="spot-metric-chip">⏱️ ${durationText}</span>` : ''}
+                      <span class="spot-metric-chip ${sInfo.isFree ? 'is-free' : 'is-paid'}">${sInfo.costChip}</span>
+                    </div>
+                  </div>
+
+                  ${gearHtml}
+                  ${imageHtml}
+                  ${subSpotsContainerHtml}
+                  ${parentActionsHtml}
+                  ${spotDrawerHtml}
                 </div>
-                ${item.desc ? `<div class="spot-node-desc">${item.desc}</div>` : ''}
-                ${imageHtml}
-                ${subSpotsContainerHtml}
-                ${parentActionsHtml}
               </div>
             </div>
             <div class="timeline-extension-col">
