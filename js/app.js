@@ -1432,7 +1432,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${stepperHtml}
                     ${exitChainHtml}
                     ${imageHtml}
-                    ${subSpotsContainerHtml}
                     ${drawerHtml}
                   </div>
                 </div>
@@ -1526,6 +1525,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${milestonesHtml}
                     ${facilitiesHtml}
                     ${imageHtml}
+                    <div class="drive-actions-group">
+                      <a href="${dirUrl}" target="_blank" class="drive-nav-btn interactive-hover" title="在 Google Maps 中一键开启自驾路线导航">
+                        🧭 开启自驾导航
+                      </a>
+                    </div>
                     ${drawerHtml}
                   </div>
                 </div>
