@@ -996,26 +996,28 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="drawer-toggle-chevron">▾</span>
         </button>
         <div class="drawer-collapse-container">
-          <div class="drawer-inner-content">
-            ${hasDesc ? `
-              <div class="drawer-desc-block">
-                <div class="drawer-section-title">📝 行程指引与说明</div>
-                <p>${desc}</p>
-              </div>
-            ` : ''}
-            ${hasTips ? `
-              <div class="drawer-tips-block">
-                <div class="drawer-section-title">⚠️ 避坑与交通注意事项</div>
-                <div>${tips}</div>
-              </div>
-            ` : ''}
-            ${hasUber ? `
-              <div class="drawer-uber-block">
-                <div class="drawer-section-title">🚕 打车 (Uber) 备选方案</div>
-                <div>${uberBackup}</div>
-              </div>
-            ` : ''}
-            ${extraHtml}
+          <div class="drawer-collapse-inner">
+            <div class="drawer-inner-content">
+              ${hasDesc ? `
+                <div class="drawer-desc-block">
+                  <div class="drawer-section-title">📝 行程指引与说明</div>
+                  <p>${desc}</p>
+                </div>
+              ` : ''}
+              ${hasTips ? `
+                <div class="drawer-tips-block">
+                  <div class="drawer-section-title">⚠️ 避坑与交通注意事项</div>
+                  <div>${tips}</div>
+                </div>
+              ` : ''}
+              ${hasUber ? `
+                <div class="drawer-uber-block">
+                  <div class="drawer-section-title">🚕 打车 (Uber) 备选方案</div>
+                  <div>${uberBackup}</div>
+                </div>
+              ` : ''}
+              ${extraHtml}
+            </div>
           </div>
         </div>
       </div>
@@ -1092,20 +1094,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasSubSpots = item.subSpots && item.subSpots.length > 0;
         const subSpotsContainerHtml = renderSubSpotsHtml(item.subSpots);
 
-        // Parent Action Buttons (Cancelled if Sub-Spots exist!)
-        const parentActionsHtml = !hasSubSpots ? `
-          <div class="spot-actions">
-            <a href="${dirUrl}" target="_blank" class="action-chip nav-btn interactive-hover">
-              🧭 导航
-            </a>
-            <a href="${mapUrl}" target="_blank" class="action-chip interactive-hover">
-              📍 定位
-            </a>
-            <a href="${taUrl}" target="_blank" class="action-chip ta-btn interactive-hover" title="在猫途鹰 TripAdvisor 查看网友真实点评与攻略">
-              🦉 猫途鹰
-            </a>
-          </div>
-        ` : '';
 
         // Generate Row Extension Column Speech Bubble (Aligned directly right next to this row!)
         let extensionColHtml = '';
@@ -1241,16 +1229,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${corridorHtml}
                     ${gridHtml}
                     ${imageHtml}
-
-                    <div class="spot-actions">
-                      <a href="${dirUrl}" target="_blank" class="action-chip nav-btn interactive-hover" title="导航至出发航站楼">
-                        🧭 航站楼导航
-                      </a>
-                      <a href="${mapUrl}" target="_blank" class="action-chip interactive-hover" title="在地图上查看航站楼位置">
-                        📍 机场定位
-                      </a>
-                    </div>
-
                     ${drawerHtml}
                   </div>
                 </div>
@@ -1319,18 +1297,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${amenitiesHtml}
                     ${imageHtml}
 
-                    <div class="spot-actions">
-                      <a href="${dirUrl}" target="_blank" class="action-chip nav-btn interactive-hover" title="导航至酒店">
-                        🧭 导航
-                      </a>
-                      <a href="${mapUrl}" target="_blank" class="action-chip interactive-hover" title="在地图上查看坐标">
-                        📍 定位
-                      </a>
-                      <a href="${taUrl}" target="_blank" class="action-chip ta-btn interactive-hover" title="在猫途鹰 TripAdvisor 查看住客评分与对比">
-                        🦉 猫途鹰
-                      </a>
-                      ${callBtnHtml}
-                    </div>
+                    ${callBtnHtml ? `<div class="spot-actions">${callBtnHtml}</div>` : ''}
 
                     ${drawerHtml}
                   </div>
@@ -1466,7 +1433,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${exitChainHtml}
                     ${imageHtml}
                     ${subSpotsContainerHtml}
-                    ${parentActionsHtml}
                     ${drawerHtml}
                   </div>
                 </div>
@@ -1560,7 +1526,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${milestonesHtml}
                     ${facilitiesHtml}
                     ${imageHtml}
-                    ${parentActionsHtml}
                     ${drawerHtml}
                   </div>
                 </div>
@@ -1628,18 +1593,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${imageHtml}
                     ${subSpotsContainerHtml}
 
-                    <div class="spot-actions">
-                      <a href="${dirUrl}" target="_blank" class="action-chip nav-btn interactive-hover" title="导航至餐厅">
-                        🧭 导航
-                      </a>
-                      <a href="${mapUrl}" target="_blank" class="action-chip interactive-hover" title="在地图上查看坐标">
-                        📍 定位
-                      </a>
-                      <a href="${taUrl}" target="_blank" class="action-chip ta-btn interactive-hover" title="在猫途鹰 TripAdvisor 查看网友真实点评与攻略">
-                        🦉 猫途鹰
-                      </a>
-                      ${bookingBtnHtml}
-                    </div>
+                    ${bookingBtnHtml ? `<div class="spot-actions">${bookingBtnHtml}</div>` : ''}
 
                     ${drawerHtml}
                   </div>
@@ -1696,7 +1650,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   ${gearHtml}
                   ${imageHtml}
                   ${subSpotsContainerHtml}
-                  ${parentActionsHtml}
                   ${spotDrawerHtml}
                 </div>
               </div>
