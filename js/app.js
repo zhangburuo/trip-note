@@ -484,6 +484,290 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Global Toggle for Progressive Disclosure Detail Drawers
+  window.toggleItemDetailDrawer = function(itemId, event) {
+    if (event) event.stopPropagation();
+    const drawerEl = document.getElementById(`drawer-${itemId}`);
+    if (!drawerEl) return;
+    const isExpanded = drawerEl.classList.toggle('is-expanded');
+    const btn = drawerEl.querySelector('.drawer-toggle-btn');
+    if (btn) {
+      btn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+      const label = btn.querySelector('.drawer-toggle-label');
+      if (label) {
+        label.textContent = isExpanded ? '收起详情与备忘' : '展开详情与备忘';
+      }
+    }
+  };
+
+  // Helper Parser: Smart Public Transit Extractor
+  function parseTransitInfo(item) {
+    const lineName = item.lineName || (item.name ? item.name.replace(/^(交通段\d*：|搭乘\s*)/, '') : '公共交通路线');
+    let transitType = item.transitType || 'train';
+    if (!item.transitType) {
+      if (/渡轮|轮渡|Ferry|船/i.test(item.name)) transitType = 'ferry';
+      else if (/公交|巴士|Bus|Shuttle|接驳/i.test(item.name)) transitType = 'bus';
+      else if (/步行|Walk/i.test(item.name)) transitType = 'walk';
+    }
+
+    let lineColor = item.lineColor;
+    if (!lineColor) {
+      if (transitType === 'ferry') lineColor = '#00843d';
+      else if (transitType === 'bus') lineColor = '#f36f21';
+      else if (transitType === 'walk') lineColor = '#64748b';
+      else lineColor = '#0098cd';
+    }
+
+    let transitIcon = '🚆';
+    if (transitType === 'ferry') transitIcon = '⛴️';
+    else if (transitType === 'bus') transitIcon = '🚌';
+    else if (transitType === 'walk') transitIcon = '🚶';
+
+    // Start & End Stations
+    let startStation = item.startStation;
+    let endStation = item.endStation;
+    if (!startStation || !endStation) {
+      if (item.subSpots && item.subSpots.length >= 2) {
+        startStation = typeof item.subSpots[0] === 'string' ? item.subSpots[0] : item.subSpots[0].name;
+        endStation = typeof item.subSpots[item.subSpots.length - 1] === 'string'
+          ? item.subSpots[item.subSpots.length - 1]
+          : item.subSpots[item.subSpots.length - 1].name;
+      } else if (item.name && item.name.includes('➔')) {
+        const cleanP = item.name.replace(/^[^(]*\(/, '').replace(/\)[^)]*$/, '');
+        const parts = cleanP.split('➔');
+        if (parts.length >= 2) {
+          startStation = startStation || parts[0].trim();
+          endStation = endStation || parts[1].trim();
+        }
+      }
+    }
+    startStation = startStation || '出发站';
+    endStation = endStation || '到达站';
+
+    // Platforms or Wharf tags
+    let startPlatform = '';
+    let endPlatform = '';
+    const wharfMatchStart = startStation.match(/(Wharf\s*\d+|Stand\s*[A-Z]|\d+号站台|Platform\s*\d+)/i);
+    if (wharfMatchStart) startPlatform = wharfMatchStart[0];
+    const wharfMatchEnd = endStation.match(/(Wharf\s*\d+|Stand\s*[A-Z]|\d+号站台|Platform\s*\d+)/i);
+    if (wharfMatchEnd) endPlatform = wharfMatchEnd[0];
+
+    // Stops & Duration
+    const stopsOrDuration = item.stopsCount || (item.duration ? `耗时约 ${item.duration}` : '快速直达');
+
+    // Payment & Policy Pills
+    const paymentPills = [];
+    const rawPayTip = (item.paymentTip || '') + ' ' + (item.tips || '');
+    if (/免费|无需购票|直接登船/i.test(rawPayTip)) {
+      paymentPills.push({ text: '免费无须刷卡', type: 'free', icon: '🆓' });
+    } else if (/Apple\s*Pay/i.test(rawPayTip)) {
+      paymentPills.push({ text: 'Apple Pay / 芯片卡', type: 'pay', icon: '💳' });
+    } else if (/刷卡|信用卡|Opal/i.test(rawPayTip)) {
+      paymentPills.push({ text: '芯片信用卡 / 挥卡', type: 'pay', icon: '💳' });
+    }
+    if (/一人一卡|一卡一人/i.test(rawPayTip)) {
+      paymentPills.push({ text: '严格一人一卡', type: 'policy', icon: '⚠️' });
+    }
+
+    // Cost Pill
+    let costChip = null;
+    if (item.cost) {
+      costChip = item.cost.split('|')[0].trim();
+    }
+
+    // Exit Steps & Walking Connection Chain
+    let exitSteps = [];
+    if (item.exitInfo) {
+      if (item.exitInfo.includes('➔')) {
+        const segs = item.exitInfo.split('➔').map(s => s.trim());
+        exitSteps = segs.map((seg, idx) => {
+          let type = 'walk';
+          let icon = '🚶';
+          if (/出口|Gate|出站|出闸机/i.test(seg)) {
+            type = 'exit';
+            icon = '🚪';
+          } else if (/酒店|海滩|门口|大厅|出发层|到达|公园/i.test(seg) || idx === segs.length - 1) {
+            type = 'dest';
+            icon = '🎯';
+          } else if (/换乘|Stand|路公交/i.test(seg)) {
+            type = 'transfer';
+            icon = '🔄';
+          }
+          return { text: seg, type, icon };
+        });
+      } else {
+        const matchExit = item.exitInfo.match(/([A-Za-z0-9\s/]+出口|出码头|出站|出闸机)/);
+        if (matchExit) {
+          exitSteps.push({ text: matchExit[0], type: 'exit', icon: '🚪' });
+          const remain = item.exitInfo.replace(matchExit[0], '').replace(/^[，,、\s➔]+/, '').trim();
+          if (remain) {
+            exitSteps.push({ text: remain, type: 'walk', icon: '🚶' });
+          }
+        } else {
+          exitSteps.push({ text: item.exitInfo, type: 'exit', icon: '🚪' });
+        }
+      }
+    }
+
+    // Uber Backup extraction
+    let uberBackup = '';
+    if (item.pitstops && item.pitstops.some(p => /Uber/i.test(p))) {
+      uberBackup = item.pitstops.find(p => /Uber/i.test(p));
+    } else if (/Uber/i.test(rawPayTip)) {
+      const m = rawPayTip.match(/(Uber[^\n。！？)]+)/i);
+      if (m) uberBackup = m[0];
+    }
+
+    return {
+      lineName,
+      lineColor,
+      transitType,
+      transitIcon,
+      startStation,
+      endStation,
+      startPlatform,
+      endPlatform,
+      stopsOrDuration,
+      paymentPills,
+      costChip,
+      exitSteps,
+      uberBackup
+    };
+  }
+
+  // Helper Parser: Smart Road Trip & Drive Extractor
+  function parseDriveInfo(item) {
+    let roadCode = '';
+    const corpus = (item.name || '') + ' ' + (item.desc || '') + ' ' + (item.tips || '');
+    const roadMatch = corpus.match(/\b(SH\s?\d+[A-Z]?)\b/i);
+    if (roadMatch) {
+      roadCode = roadMatch[1].replace(/\s+/, '').toUpperCase();
+    } else if (/穿山隧道|隧道/i.test(item.name)) {
+      roadCode = '穿山隧道';
+    } else if (/公路|自驾|盘山/i.test(item.name)) {
+      roadCode = '公路自驾';
+    }
+
+    const distance = item.distance || '';
+    const duration = item.duration || '';
+
+    // Milestones
+    const milestones = [];
+    let startPlace = '';
+    let endPlace = '';
+    if (item.name && item.name.includes('➔')) {
+      const cleanName = item.name.replace(/^自驾段\s*\d*：/, '').replace(/\([^)]*\)/g, '').trim();
+      const parts = cleanName.split('➔');
+      if (parts.length >= 2) {
+        startPlace = parts[0].trim();
+        endPlace = parts[1].trim();
+      }
+    }
+
+    if (startPlace) {
+      milestones.push({ icon: '🏁', name: startPlace, isStart: true });
+    }
+
+    if (item.pitstops && item.pitstops.length > 0) {
+      item.pitstops.forEach(p => {
+        if (/路段|风光|平原好开|Uber/i.test(p)) return;
+        const cleanP = p.replace(/\([^)]*\)/g, '').trim();
+        let icon = '☕';
+        if (/Lookout|观景|全景|湖|山口|巨石/i.test(cleanP)) icon = '🏞️';
+        else if (/加油|BP/i.test(cleanP)) icon = '⛽';
+        else if (/停车/i.test(cleanP)) icon = '🅿️';
+        milestones.push({ icon, name: cleanP });
+      });
+    }
+
+    if (endPlace && (!milestones.length || milestones[milestones.length - 1].name !== endPlace)) {
+      milestones.push({ icon: '🎯', name: endPlace, isEnd: true });
+    }
+
+    // Road Cautions
+    const cautions = [];
+    if (/弯|弯道|坡陡|盘山/i.test(corpus)) {
+      cautions.push({ icon: '⚠️', text: '多急弯·减速慢行' });
+    }
+    if (/让行|Slow Vehicle/i.test(corpus)) {
+      cautions.push({ icon: '🛑', text: '设有慢车让行道 (Slow Bay)' });
+    }
+    if (/加油|BP Connect|补油/i.test(corpus)) {
+      cautions.push({ icon: '⛽', text: '沿途加油补给提醒', isGas: true });
+    }
+    if (/平原|平坦|好开/i.test(corpus)) {
+      cautions.push({ icon: '🟢', text: '平原开阔好开', isSafe: true });
+    }
+    if (/风向|横风/i.test(corpus)) {
+      cautions.push({ icon: '🌬️', text: '山口注意风向' });
+    }
+
+    // Facilities & Parking
+    const facilities = [];
+    if (item.parking) {
+      facilities.push({ icon: '🅿️', text: item.parking });
+    }
+    if (/卫生间|厕所|Toilet/i.test(corpus) && !facilities.some(f => f.text.includes('卫生间'))) {
+      facilities.push({ icon: '🚾', text: '公共卫生间设施' });
+    }
+
+    return {
+      roadCode,
+      distance,
+      duration,
+      milestones,
+      cautions,
+      facilities
+    };
+  }
+
+  // Progressive Disclosure Drawer Renderer
+  function renderCardDetailDrawerHtml(itemId, { desc, tips, uberBackup, pitstops, extraHtml = '' }) {
+    const hasDesc = !!desc && desc.trim().length > 0;
+    const hasTips = !!tips && tips.trim().length > 0;
+    const hasUber = !!uberBackup && uberBackup.trim().length > 0;
+    const hasPitstops = Array.isArray(pitstops) && pitstops.length > 0;
+
+    if (!hasDesc && !hasTips && !hasUber && !hasPitstops && !extraHtml) {
+      return '';
+    }
+
+    return `
+      <div class="card-detail-drawer" id="drawer-${itemId}">
+        <button type="button" class="drawer-toggle-btn" onclick="toggleItemDetailDrawer('${itemId}', event)" aria-expanded="false">
+          <span class="drawer-toggle-left">
+            <span class="drawer-toggle-icon">💡</span>
+            <span class="drawer-toggle-label">展开详情与备忘</span>
+          </span>
+          <span class="drawer-toggle-chevron">▾</span>
+        </button>
+        <div class="drawer-collapse-container">
+          <div class="drawer-inner-content">
+            ${hasDesc ? `
+              <div class="drawer-desc-block">
+                <div class="drawer-section-title">📝 行程指引与说明</div>
+                <p>${desc}</p>
+              </div>
+            ` : ''}
+            ${hasTips ? `
+              <div class="drawer-tips-block">
+                <div class="drawer-section-title">⚠️ 避坑与交通注意事项</div>
+                <div>${tips}</div>
+              </div>
+            ` : ''}
+            ${hasUber ? `
+              <div class="drawer-uber-block">
+                <div class="drawer-section-title">🚕 打车 (Uber) 备选方案</div>
+                <div>${uberBackup}</div>
+              </div>
+            ` : ''}
+            ${extraHtml}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   // Render Parallel Row-Aligned Dual-Column Timeline View
   function renderTimelineView() {
     const items = window.tripStore.getFilteredItinerary(activeDestinationFilter);
@@ -778,82 +1062,119 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
         }
 
-        // Dedicated Transit Item Node Card
+        // Dedicated Transit Item Node Card (V2 - Apple Frosted Glass Stepper & Visual Exit Chain)
         if (item.type === 'transit') {
-          function renderTransitRouteCardHtml(item) {
-            if (!item.lineName && !item.startStation) return '';
+          const tInfo = parseTransitInfo(item);
 
-            const lineColor = item.lineColor || '#0284c7';
-            let transitIcon = '🚆';
-            if (item.transitType === 'ferry') transitIcon = '⛴️';
-            else if (item.transitType === 'bus') transitIcon = '🚌';
-            else if (item.transitType === 'walk') transitIcon = '🚶';
-            else if (item.transitType === 'flight') transitIcon = '✈️';
+          // Payment & Policy chips HTML
+          const paymentChipsHtml = tInfo.paymentPills.map(p => `
+            <span class="${p.type === 'policy' ? 'transit-v2-policy-chip' : 'transit-v2-pay-chip'}">
+              ${p.icon} ${p.text}
+            </span>
+          `).join('');
 
-            const payTipHtml = item.paymentTip ? `
-              <span class="transit-pay-chip">💳 ${item.paymentTip.includes('Apple Pay') ? 'Apple Pay / 感应卡' : '刷卡乘车'}</span>
-            ` : '';
-            
-            return `
-              <div class="transit-route-card" style="border-left: 4px solid ${lineColor}; --route-color: ${lineColor};">
-                <div class="transit-route-header">
-                  <span class="transit-line-badge" style="background: ${lineColor};">
-                    ${transitIcon} ${item.lineName || '公共交通路线'}
-                  </span>
-                  ${payTipHtml}
+          const costChipHtml = tInfo.costChip ? `
+            <span class="transit-v2-cost-chip">💰 ${tInfo.costChip}</span>
+          ` : '';
+
+          // Stepper Visual Track HTML
+          const stepperHtml = `
+            <div class="transit-v2-stepper">
+              <div class="transit-v2-node start-node">
+                <div class="transit-v2-dot-wrapper">
+                  <span class="transit-v2-dot"></span>
                 </div>
-
-                <div class="transit-stepper-box">
-                  <div class="stepper-node start-node">
-                    <span class="stepper-dot" style="border-color: ${lineColor};"></span>
-                    <div class="stepper-text">
-                      <div class="stepper-station-name">${item.startStation || '上车站'}</div>
-                      <div class="stepper-sub-tag">上车 · 进站</div>
-                    </div>
-                  </div>
-
-                  <div class="stepper-connector">
-                    <div class="stepper-line" style="background: linear-gradient(90deg, ${lineColor}, #38bdf8);"></div>
-                    <span class="stepper-stops-chip">⏱️ ${item.stopsCount || '途经站点'}</span>
-                  </div>
-
-                  <div class="stepper-node end-node">
-                    <span class="stepper-dot end-dot" style="background: ${lineColor}; border-color: ${lineColor};"></span>
-                    <div class="stepper-text">
-                      <div class="stepper-station-name">${item.endStation || '下车站'}</div>
-                      <div class="stepper-sub-tag">下车 · 出站</div>
-                    </div>
+                <div class="transit-v2-station-meta">
+                  <div class="transit-v2-station-name">${tInfo.startStation}</div>
+                  <div class="transit-v2-station-sub">
+                    <span class="transit-action-tag tap-on">🟢 进站挥卡</span>
+                    ${tInfo.startPlatform ? `<span class="transit-platform-tag">${tInfo.startPlatform}</span>` : ''}
                   </div>
                 </div>
+              </div>
 
-                ${item.exitInfo ? `<div class="transit-exit-info">🚶 出站指引: ${item.exitInfo}</div>` : ''}
-                ${item.paymentTip ? `<div class="transit-payment-tip">${item.paymentTip}</div>` : ''}
+              <div class="transit-v2-track-connector">
+                <div class="transit-v2-track-line"></div>
+                <span class="transit-v2-track-badge">⏱️ ${tInfo.stopsOrDuration}</span>
+              </div>
+
+              <div class="transit-v2-node end-node">
+                <div class="transit-v2-dot-wrapper">
+                  <span class="transit-v2-dot end-dot"></span>
+                </div>
+                <div class="transit-v2-station-meta">
+                  <div class="transit-v2-station-name">${tInfo.endStation}</div>
+                  <div class="transit-v2-station-sub">
+                    <span class="transit-action-tag tap-off">🔴 出站挥卡</span>
+                    ${tInfo.endPlatform ? `<span class="transit-platform-tag">${tInfo.endPlatform}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Exit chain HTML
+          let exitChainHtml = '';
+          if (tInfo.exitSteps && tInfo.exitSteps.length > 0) {
+            const stepsHtml = tInfo.exitSteps.map((step, idx) => {
+              const arrow = idx < tInfo.exitSteps.length - 1 ? '<span class="exit-chain-arrow">➔</span>' : '';
+              let pillClass = 'is-walk';
+              if (step.type === 'exit') pillClass = 'is-exit';
+              else if (step.type === 'dest') pillClass = 'is-destination';
+              return `
+                <span class="exit-step-pill ${pillClass}">
+                  ${step.icon} ${step.text}
+                </span>
+                ${arrow}
+              `;
+            }).join('');
+
+            exitChainHtml = `
+              <div class="transit-v2-exit-chain">
+                <div class="exit-chain-header">
+                  <span class="exit-chain-icon">🚪</span>
+                  <span>出站指引与接驳链</span>
+                </div>
+                <div class="exit-chain-pills">
+                  ${stepsHtml}
+                </div>
               </div>
             `;
           }
 
-          const transitRouteHtml = renderTransitRouteCardHtml(item);
-          let transitTitleIcon = '🚆';
-          if (item.transitType === 'ferry') transitTitleIcon = '⛴️';
-          else if (item.transitType === 'bus') transitTitleIcon = '🚌';
-          else if (item.transitType === 'walk') transitTitleIcon = '🚶';
+          // Progressive disclosure detail drawer
+          const drawerHtml = renderCardDetailDrawerHtml(item.id, {
+            desc: item.desc,
+            tips: item.tips,
+            uberBackup: tInfo.uberBackup
+          });
 
           return `
             <div class="timeline-row-grid timeline-item-type-transit ${activeItemClass} ${completedClass}" id="${itemRowId}">
               <div class="timeline-primary-col">
                 ${renderTimeBadgeHtml(item.time)}
                 <div class="item-content">
-                  <div class="transit-node-card">
-                    <div class="transit-node-title">
-                      ${transitTitleIcon} ${item.name} 
-                      ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
-                      ${isCurrentActiveItem ? `<span class="live-active-tag">🟢 当前焦点</span>` : ''}
+                  <div class="transit-card-v2 apple-glass-card" style="--route-color: ${tInfo.lineColor};">
+                    <div class="transit-v2-header">
+                      <div class="transit-v2-line-group">
+                        <span class="transit-v2-line-badge">
+                          ${tInfo.transitIcon} ${tInfo.lineName}
+                        </span>
+                        ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
+                        ${isCurrentActiveItem ? `<span class="live-active-tag">🟢 当前焦点</span>` : ''}
+                      </div>
+                      <div class="transit-v2-pill-group">
+                        ${paymentChipsHtml}
+                        ${costChipHtml}
+                      </div>
                     </div>
-                    ${item.desc ? `<div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.3rem;">${item.desc}</div>` : ''}
-                    ${transitRouteHtml}
+
+                    ${stepperHtml}
+                    ${exitChainHtml}
                     ${imageHtml}
                     ${subSpotsContainerHtml}
                     ${parentActionsHtml}
+                    ${drawerHtml}
                   </div>
                 </div>
               </div>
@@ -864,22 +1185,90 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
         }
 
-        // Drive Item Node Card
+        // Dedicated Drive Item Node Card (V2 - Apple Frosted Glass Road Book & Milestones)
         if (item.type === 'drive') {
+          const dInfo = parseDriveInfo(item);
+
+          // Metrics Pills (Distance & Duration)
+          let metricsHtml = '';
+          if (dInfo.distance || dInfo.duration) {
+            metricsHtml = `
+              <div class="drive-v2-metrics">
+                ${dInfo.distance ? `<span class="drive-metric-chip">🚗 ${dInfo.distance}</span>` : ''}
+                ${dInfo.duration ? `<span class="drive-metric-chip">⏱️ ${dInfo.duration}</span>` : ''}
+              </div>
+            `;
+          }
+
+          // Cautions Tags
+          let cautionsHtml = '';
+          if (dInfo.cautions && dInfo.cautions.length > 0) {
+            const tags = dInfo.cautions.map(c => `
+              <span class="drive-caution-chip ${c.isSafe ? 'is-safe' : ''} ${c.isGas ? 'is-gas' : ''}">
+                ${c.icon} ${c.text}
+              </span>
+            `).join('');
+            cautionsHtml = `<div class="drive-caution-tags">${tags}</div>`;
+          }
+
+          // Milestone track
+          let milestonesHtml = '';
+          if (dInfo.milestones && dInfo.milestones.length > 0) {
+            const mNodes = dInfo.milestones.map((m, idx) => {
+              const arrow = idx < dInfo.milestones.length - 1 ? '<span class="milestone-arrow">➔</span>' : '';
+              return `
+                <span class="milestone-node ${m.isStart ? 'is-start' : ''} ${m.isEnd ? 'is-end' : ''}">
+                  ${m.icon} ${m.name}
+                </span>
+                ${arrow}
+              `;
+            }).join('');
+
+            milestonesHtml = `
+              <div class="drive-milestone-track">
+                ${mNodes}
+              </div>
+            `;
+          }
+
+          // Facilities / Parking bar
+          let facilitiesHtml = '';
+          if (dInfo.facilities && dInfo.facilities.length > 0) {
+            const facChips = dInfo.facilities.map(f => `
+              <span class="drive-facility-chip">${f.icon} ${f.text}</span>
+            `).join('');
+            facilitiesHtml = `<div class="drive-facility-bar">${facChips}</div>`;
+          }
+
+          // Progressive disclosure detail drawer
+          const drawerHtml = renderCardDetailDrawerHtml(item.id, {
+            desc: item.desc,
+            tips: item.tips,
+            pitstops: item.pitstops
+          });
+
           return `
             <div class="timeline-row-grid timeline-item-type-drive ${activeItemClass} ${completedClass}" id="${itemRowId}">
               <div class="timeline-primary-col">
                 ${renderTimeBadgeHtml(item.time)}
                 <div class="item-content">
-                  <div class="drive-node-card">
-                    <div class="drive-node-title">
-                      🚗 ${item.name} (${item.distance || ''} · ${item.duration || ''}) 
-                      ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
-                      ${isCurrentActiveItem ? `<span class="live-active-tag">🟢 当前焦点</span>` : ''}
+                  <div class="drive-card-v2 apple-glass-card">
+                    <div class="drive-v2-header">
+                      <div class="drive-v2-shield-group">
+                        ${dInfo.roadCode ? `<span class="drive-shield-badge">${dInfo.roadCode}</span>` : ''}
+                        <span class="drive-v2-title">${item.name}</span>
+                        ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
+                        ${isCurrentActiveItem ? '<span class="live-active-tag">🟢 当前焦点</span>' : ''}
+                      </div>
+                      ${metricsHtml}
                     </div>
-                    ${item.desc ? `<div style="font-size: 0.85rem; color: var(--text-muted);">${item.desc}</div>` : ''}
+
+                    ${cautionsHtml}
+                    ${milestonesHtml}
+                    ${facilitiesHtml}
                     ${imageHtml}
                     ${parentActionsHtml}
+                    ${drawerHtml}
                   </div>
                 </div>
               </div>

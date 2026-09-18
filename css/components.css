@@ -1464,143 +1464,661 @@
   transform: scale(1.1);
 }
 
-/* Sydney & City Public Transit Route Card UI */
-.transit-route-card {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid var(--border-glass-bright);
+/* ==========================================================================
+   Apple Frosted Glass & Impeccable Design System Base Utilities
+   ========================================================================== */
+.apple-glass-card {
+  background: rgba(18, 26, 43, 0.72);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
-  padding: 0.9rem 1rem;
-  margin-top: 0.65rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 30px rgba(0, 0, 0, 0.36);
+  position: relative;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
-.transit-route-header {
+.apple-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+
+.apple-glass-sub-panel {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.apple-glass-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0.22rem 0.65rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Public Transit 2.0 Card UI (Apple Liquid Glass & Visual Stepper)
+   ========================================================================== */
+.transit-card-v2 {
+  background: rgba(18, 26, 43, 0.75);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 4px solid var(--route-color, #0284c7);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 30px rgba(0, 0, 0, 0.35);
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.transit-card-v2:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-left-color: var(--route-color, #0284c7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+
+.transit-v2-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.transit-v2-line-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.transit-line-badge {
+.transit-v2-line-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
+  background: var(--route-color, #0284c7);
   color: #ffffff;
   font-weight: 800;
-  font-size: 0.82rem;
-  padding: 0.25rem 0.65rem;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-size: 0.84rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.2px;
 }
 
-.transit-pay-chip {
+.transit-v2-pill-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.transit-v2-pay-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.transit-v2-policy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+}
+
+.transit-v2-cost-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
   background: rgba(56, 189, 248, 0.12);
   border: 1px solid rgba(56, 189, 248, 0.3);
   color: #38bdf8;
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 700;
-  padding: 0.2rem 0.55rem;
+  padding: 0.22rem 0.6rem;
   border-radius: 999px;
 }
 
-.transit-stepper-box {
+/* Continuous Subway Track Stepper (Vertical Flow) */
+.transit-v2-stepper {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(30, 41, 59, 0.6);
+  flex-direction: column;
+  background: rgba(20, 30, 48, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-sm);
-  padding: 0.65rem 0.85rem;
-  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  gap: 0;
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.stepper-node {
+.transit-v2-node {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.transit-v2-dot-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-}
-
-.stepper-node.end-node {
-  justify-content: flex-end;
-  text-align: right;
-}
-
-.stepper-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 3px solid #38bdf8;
-  background: #0f172a;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
   flex-shrink: 0;
 }
 
-.stepper-dot.end-dot {
-  background: #38bdf8;
+.transit-v2-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--route-color, #38bdf8);
+  background: #090d16;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.8), 0 0 8px var(--route-color, #38bdf8);
+  flex-shrink: 0;
+  z-index: 2;
 }
 
-.stepper-text {
+.transit-v2-dot.end-dot {
+  background: var(--route-color, #38bdf8);
+}
+
+.transit-v2-station-meta {
   display: flex;
   flex-direction: column;
-}
-
-.stepper-station-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #f1f5f9;
-}
-
-.stepper-sub-tag {
-  font-size: 0.7rem;
-  color: #94a3b8;
-}
-
-.stepper-connector {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 0.2rem;
-  min-width: 80px;
+  flex: 1;
 }
 
-.stepper-line {
-  height: 3px;
+.transit-v2-station-name {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.35;
+  letter-spacing: 0.1px;
+}
+
+.transit-v2-station-sub {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.transit-action-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.transit-action-tag.tap-on {
+  background: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+
+.transit-action-tag.tap-off {
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+.transit-platform-tag {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Connecting Track Line */
+.transit-v2-track-connector {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  position: relative;
+  padding: 0.35rem 0;
   width: 100%;
+}
+
+.transit-v2-track-line {
+  width: 3px;
+  height: 32px;
+  margin-left: 6.5px; /* Center aligned with 16px wrapper */
+  background: var(--route-color, #38bdf8);
+  box-shadow: 0 0 6px var(--route-color, #38bdf8);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.transit-v2-track-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  color: #38bdf8;
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Visual Exit & Walking Connection Chain */
+.transit-v2-exit-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-left: 3px solid #38bdf8;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.65rem 0.85rem;
+}
+
+.exit-chain-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.exit-chain-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.exit-step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.exit-step-pill.is-exit {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+.exit-step-pill.is-walk {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #e2e8f0;
+}
+
+.exit-step-pill.is-destination {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+
+.exit-chain-arrow {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   Road Trip Drive 2.0 Card UI (Apple Liquid Glass & Road Book)
+   ========================================================================== */
+.drive-card-v2 {
+  background: rgba(18, 26, 43, 0.75);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 4px solid #f59e0b; /* Amber road trip branding */
+  border-radius: var(--radius-md);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 30px rgba(0, 0, 0, 0.35);
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.drive-card-v2:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-left-color: #f59e0b;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+
+.drive-v2-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.drive-v2-shield-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.drive-shield-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.22rem 0.6rem;
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.78rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(180, 83, 9, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.drive-v2-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.35;
+}
+
+.drive-v2-metrics {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.drive-metric-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Road Condition & Caution Tags */
+.drive-caution-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.drive-caution-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.32);
+  color: #fca5a5;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
   border-radius: 999px;
 }
 
-.stepper-stops-chip {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #38bdf8;
-  white-space: nowrap;
+.drive-caution-chip.is-safe {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.32);
+  color: #6ee7b7;
 }
 
-.transit-exit-info {
-  font-size: 0.8rem;
+.drive-caution-chip.is-gas {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.32);
+  color: #fcd34d;
+}
+
+/* Milestone Track Stepper */
+.drive-milestone-track {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: rgba(20, 30, 48, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.milestone-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  padding: 0.18rem 0.45rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+}
+
+.milestone-node.is-start {
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.milestone-node.is-end {
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.milestone-arrow {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+/* Parking & Facilities Bar */
+.drive-facility-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.drive-facility-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  color: #38bdf8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.22rem 0.65rem;
+  border-radius: 8px;
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   Universal Progressive Disclosure Detail Drawer (Apple Spring Motion)
+   ========================================================================== */
+.card-detail-drawer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 0.25rem;
+  padding-top: 0.35rem;
+}
+
+.drawer-toggle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.45rem 0.3rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+  border-radius: 6px;
+  min-height: 38px;
+  touch-action: manipulation;
+}
+
+.drawer-toggle-btn:hover {
+  color: #38bdf8;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.drawer-toggle-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.drawer-toggle-chevron {
+  display: inline-block;
+  font-size: 0.82rem;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-detail-drawer.is-expanded .drawer-toggle-chevron {
+  transform: rotate(180deg);
+}
+
+.card-detail-drawer.is-expanded .drawer-toggle-btn {
+  color: #38bdf8;
+}
+
+/* CSS Grid 0fr -> 1fr Hardware-Accelerated Smooth Accordion */
+.drawer-collapse-container {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-detail-drawer.is-expanded .drawer-collapse-container {
+  grid-template-rows: 1fr;
+}
+
+.drawer-collapse-container > .drawer-inner-content {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.card-detail-drawer.is-expanded .drawer-collapse-container > .drawer-inner-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.drawer-inner-content {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.95rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.drawer-section-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  letter-spacing: 0.2px;
+}
+
+.drawer-desc-block p,
+.drawer-tips-block,
+.drawer-uber-block {
   color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.04);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.drawer-tips-block {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-left: 3px solid #f59e0b;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.drawer-uber-block {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
   border-left: 3px solid #38bdf8;
   padding: 0.45rem 0.65rem;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  line-height: 1.4;
-}
-
-.transit-payment-tip {
-  font-size: 0.78rem;
-  color: #34d399;
-  background: rgba(52, 211, 153, 0.08);
-  border: 1px solid rgba(52, 211, 153, 0.2);
-  padding: 0.45rem 0.65rem;
-  border-radius: var(--radius-sm);
-  line-height: 1.4;
 }
 
 /* ==========================================================================
@@ -2476,6 +2994,48 @@
     line-height: 1.45;
     word-break: break-word;
   }
+
+  /* Responsive V2 Transit & Drive Cards */
+  .transit-card-v2,
+  .drive-card-v2 {
+    padding: 0.85rem 0.95rem;
+    gap: 0.75rem;
+  }
+
+  .transit-v2-header,
+  .drive-v2-header {
+    gap: 0.5rem;
+  }
+
+  .transit-v2-line-badge {
+    font-size: 0.78rem;
+    padding: 0.24rem 0.65rem;
+  }
+
+  .drive-v2-title {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .transit-v2-station-name {
+    font-size: 0.86rem;
+  }
+
+  .exit-step-pill {
+    font-size: 0.74rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .drive-milestone-track {
+    padding: 0.55rem 0.75rem;
+    gap: 0.35rem;
+  }
+
+  .milestone-node {
+    font-size: 0.74rem;
+    padding: 0.15rem 0.4rem;
+  }
+
 
   /* 10. Mobile Bottom Floating Dock */
   .mobile-dock {

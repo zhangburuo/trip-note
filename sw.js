@@ -1,16 +1,16 @@
 // Trip Note Service Worker - Offline Cache & Fast Launch
-const CACHE_NAME = 'trip-note-cache-v37.4';
+const CACHE_NAME = 'trip-note-cache-v38.0';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './css/main.css?v=37.4',
-  './css/components.css?v=37.4',
-  './css/animations.css?v=37.4',
-  './js/data.js?v=37.4',
-  './js/maps.js?v=37.4',
-  './js/weather.js?v=37.4',
-  './js/app.js?v=37.4'
+  './css/main.css?v=38.0',
+  './css/components.css?v=38.0',
+  './css/animations.css?v=38.0',
+  './js/data.js?v=38.0',
+  './js/maps.js?v=38.0',
+  './js/weather.js?v=38.0',
+  './js/app.js?v=38.0'
 ];
 
 self.addEventListener('message', event => {
