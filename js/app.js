@@ -1719,7 +1719,7 @@ document.addEventListener('DOMContentLoaded', () => {
               const verifyLink = loc.sourceApiUrl
                 ? `<a href="${loc.sourceApiUrl}" target="_blank" class="popover-source-link">📡 Open-Meteo API 原始数据 ↗ <span style="opacity:0.6;font-size:0.7rem;">(JSON 可直接阅读验证)</span></a>`
                 : '';
-              const agencyLink = `<a href="${loc.agencyUrl}" target="_blank" class="popover-source-link">🏛️ ${loc.agencyName} 官方气象参考 ↗</a>`;
+              const agencyLink = `<a href="${loc.agencyUrl}" target="_blank" class="popover-source-link">🏛️ ${loc.agencyName}（${loc.city} 官方精准预报）↗</a>`;
               const historicalNote = loc.isHistorical
                 ? `<br><br>💡 <b>注意</b>：目标日期超出预报窗口，当前显示为历史气候参考。`
                 : '';
@@ -1757,7 +1757,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             const agencyLinksHtml = w.locations.map(loc => `
-              <a href="${loc.agencyUrl}" target="_blank" class="popover-source-link">🌐 ${loc.city} - ${loc.agencyName} 官方预报 ↗</a>
+              <a href="${loc.agencyUrl}" target="_blank" class="popover-source-link">🌐 ${loc.city} · ${loc.agencyName} 官方预报 ↗</a>
             `).join('');
 
             const clothingWrapper = `

@@ -94,7 +94,7 @@ class WeatherService {
             lng: day.lng,
             agencyName: day.destinationCode === 'au' ? 'Australia BOM' : (day.destinationCode === 'nz' ? 'MetService NZ' : '中国天气网'),
             agencyUrl: day.destinationCode === 'au' 
-              ? 'http://www.bom.gov.au/' 
+              ? 'https://www.bom.gov.au/' 
               : (day.destinationCode === 'nz' ? 'https://www.metservice.com/' : 'http://www.weather.com.cn/'),
             historicalRange: '10°C ~ 18°C'
           }

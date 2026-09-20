@@ -99,7 +99,7 @@ const initial11DayItinerary = [
         lat: -27.4705,
         lng: 153.0260,
         agencyName: 'Australia BOM',
-        agencyUrl: 'http://www.bom.gov.au/qld/forecasts/brisbane.shtml',
+        agencyUrl: 'https://www.bom.gov.au/qld/forecasts/brisbane.shtml',
         historicalRange: '15°C ~ 25°C'
       },
       {
@@ -318,7 +318,7 @@ const initial11DayItinerary = [
         lat: -43.8037,
         lng: 172.9682,
         agencyName: 'MetService NZ',
-        agencyUrl: 'https://www.metservice.com/towns-cities/locations/christchurch',
+        agencyUrl: 'https://www.metservice.com/towns-cities/locations/akaroa',
         historicalRange: '7°C ~ 16°C'
       }
     ],
@@ -489,7 +489,7 @@ const initial11DayItinerary = [
         lat: -43.8037,
         lng: 172.9682,
         agencyName: 'MetService NZ',
-        agencyUrl: 'https://www.metservice.com/towns-cities/locations/christchurch',
+        agencyUrl: 'https://www.metservice.com/towns-cities/locations/akaroa',
         historicalRange: '7°C ~ 16°C'
       },
       {
@@ -497,7 +497,7 @@ const initial11DayItinerary = [
         lat: -44.0047,
         lng: 170.4771,
         agencyName: 'MetService NZ',
-        agencyUrl: 'https://www.metservice.com/towns-cities/locations/christchurch',
+        agencyUrl: 'https://www.metservice.com/towns-cities/locations/tekapo',
         historicalRange: '2°C ~ 14°C'
       }
     ],
@@ -663,7 +663,7 @@ const initial11DayItinerary = [
         lat: -44.0046,
         lng: 170.4771,
         agencyName: 'MetService NZ',
-        agencyUrl: 'https://www.metservice.com/towns-cities/locations/christchurch',
+        agencyUrl: 'https://www.metservice.com/towns-cities/locations/tekapo',
         historicalRange: '2°C ~ 14°C'
       }
     ],
@@ -980,7 +980,7 @@ const initial11DayItinerary = [
         lat: -33.8688,
         lng: 151.2093,
         agencyName: 'Australia BOM',
-        agencyUrl: 'http://www.bom.gov.au/nsw/forecasts/sydney.shtml',
+        agencyUrl: 'https://www.bom.gov.au/nsw/forecasts/sydney.shtml',
         historicalRange: '14°C ~ 22°C'
       }
     ],
@@ -1217,7 +1217,7 @@ const initial11DayItinerary = [
         lat: -33.8688,
         lng: 151.2093,
         agencyName: 'Australia BOM',
-        agencyUrl: 'http://www.bom.gov.au/nsw/forecasts/sydney.shtml',
+        agencyUrl: 'https://www.bom.gov.au/nsw/forecasts/sydney.shtml',
         historicalRange: '14°C ~ 23°C'
       }
     ],
@@ -1388,7 +1388,7 @@ const initial11DayItinerary = [
         lat: -33.8688,
         lng: 151.2093,
         agencyName: 'Australia BOM',
-        agencyUrl: 'http://www.bom.gov.au/nsw/forecasts/sydney.shtml',
+        agencyUrl: 'https://www.bom.gov.au/nsw/forecasts/sydney.shtml',
         historicalRange: '14°C ~ 23°C'
       }
     ],
@@ -1534,16 +1534,8 @@ const initial11DayItinerary = [
         lat: -33.8688,
         lng: 151.2093,
         agencyName: 'Australia BOM',
-        agencyUrl: 'http://www.bom.gov.au/nsw/forecasts/sydney.shtml',
+        agencyUrl: 'https://www.bom.gov.au/nsw/forecasts/sydney.shtml',
         historicalRange: '14°C ~ 23°C'
-      },
-      {
-        city: '广州',
-        lat: 23.3924,
-        lng: 113.2988,
-        agencyName: '中国天气网 (CMA)',
-        agencyUrl: 'http://www.weather.com.cn/weather/101280101.shtml',
-        historicalRange: '21°C ~ 29°C'
       }
     ],
     items: [
@@ -1657,12 +1649,20 @@ const initial11DayItinerary = [
     lng: 151.2093,
     weatherLocations: [
       {
-        city: '广州',
-        lat: 23.3924,
-        lng: 113.2988,
+        city: '悉尼',
+        lat: -33.8688,
+        lng: 151.2093,
+        agencyName: 'Australia BOM',
+        agencyUrl: 'https://www.bom.gov.au/nsw/forecasts/sydney.shtml',
+        historicalRange: '14°C ~ 23°C'
+      },
+      {
+        city: '北京',
+        lat: 39.9042,
+        lng: 116.4074,
         agencyName: '中国天气网 (CMA)',
-        agencyUrl: 'http://www.weather.com.cn/weather/101280101.shtml',
-        historicalRange: '21°C ~ 29°C'
+        agencyUrl: 'http://www.weather.com.cn/weather/101010100.shtml',
+        historicalRange: '8°C ~ 20°C'
       }
     ],
     items: [
