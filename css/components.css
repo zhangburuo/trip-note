@@ -162,15 +162,29 @@
   overflow: visible !important;
   transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: var(--shadow-card);
+  z-index: 1;
 }
 
+/* Hover or focus on a card elevates slightly above sibling cards, but never above active popovers */
 .day-card:hover,
-.day-card:focus-within,
-.day-card:has(.weather-clothing-wrapper.active),
-.day-card:has(.weather-badge-wrapper.active),
-.day-card.has-active-popover {
-  z-index: 9999 !important;
+.day-card:focus-within {
+  z-index: 5;
   position: relative;
+}
+
+/* Day cards with open weather/clothing popovers MUST ALWAYS remain in topmost layer */
+.day-card.has-active-popover,
+.day-card:has(.weather-clothing-wrapper.active),
+.day-card:has(.weather-badge-wrapper.active) {
+  z-index: 10000 !important;
+  position: relative !important;
+}
+
+.day-card.has-active-popover .day-header,
+.day-card:has(.weather-clothing-wrapper.active) .day-header,
+.day-card:has(.weather-badge-wrapper.active) .day-header {
+  z-index: 10001 !important;
+  position: relative !important;
 }
 
 .day-header {
@@ -499,12 +513,17 @@
   border-radius: var(--radius-md);
   padding: 1rem 1.15rem;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(168, 85, 247, 0.25);
-  z-index: 9999;
+  z-index: 10005 !important;
   opacity: 0;
   visibility: hidden;
   transform: translateY(6px);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
+}
+
+.weather-clothing-wrapper.active {
+  z-index: 10002 !important;
+  position: relative !important;
 }
 
 .weather-clothing-wrapper.active .weather-clothing-popover {
@@ -618,12 +637,17 @@
   border-radius: var(--radius-md);
   padding: 1rem 1.15rem;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(56, 189, 248, 0.2);
-  z-index: 9999;
+  z-index: 10005 !important;
   opacity: 0;
   visibility: hidden;
   transform: translateY(6px);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
+}
+
+.weather-badge-wrapper.active {
+  z-index: 10002 !important;
+  position: relative !important;
 }
 
 .weather-badge-wrapper.active .weather-detail-popover {
@@ -1265,7 +1289,7 @@
   inset: 0;
   background: rgba(4, 9, 20, 0.85);
   backdrop-filter: blur(16px);
-  z-index: 9999;
+  z-index: 11000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -3157,7 +3181,7 @@
     width: auto !important;
     max-width: calc(100vw - 1.5rem) !important;
     box-sizing: border-box !important;
-    z-index: 10001 !important;
+    z-index: 10005 !important;
     max-height: 75vh !important;
     overflow-y: auto !important;
     border-radius: var(--radius-md) !important;
