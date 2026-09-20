@@ -318,7 +318,7 @@ const initial11DayItinerary = [
         lat: -43.8037,
         lng: 172.9682,
         agencyName: 'MetService NZ',
-        agencyUrl: 'https://www.metservice.com/towns-cities/locations/akaroa',
+        agencyUrl: 'https://www.metservice.com/towns-cities/regions/christchurch/locations/akaroa',
         historicalRange: '7°C ~ 16°C'
       }
     ],
@@ -489,7 +489,7 @@ const initial11DayItinerary = [
         lat: -43.8037,
         lng: 172.9682,
         agencyName: 'MetService NZ',
-        agencyUrl: 'https://www.metservice.com/towns-cities/locations/akaroa',
+        agencyUrl: 'https://www.metservice.com/towns-cities/regions/christchurch/locations/akaroa',
         historicalRange: '7°C ~ 16°C'
       },
       {
@@ -655,7 +655,7 @@ const initial11DayItinerary = [
         lat: -43.7347,
         lng: 170.0963,
         agencyName: 'MetService NZ (山地)',
-        agencyUrl: 'https://www.metservice.com/mountains-and-parks/national-parks/aoraki-mount-cook',
+        agencyUrl: 'https://www.metservice.com/mountains-and-parks/national-parks/aoraki-mt-cook',
         historicalRange: '3°C ~ 12°C'
       },
       {
@@ -689,7 +689,7 @@ const initial11DayItinerary = [
         tips: '💡 出发前查验：07:30 - 08:00 通过 DoC 官网或 MetService 确认库克山天气与 Hooker Valley Track 开放状态。',
         subSpots: [
           { name: '🇳🇿 DoC 官方 Hooker Valley Track 开放状态查询', mapQuery: 'DoC Hooker Valley Track Status', url: 'https://www.doc.govt.nz/parks-and-recreation/places-to-go/canterbury/places/aoraki-mount-cook-national-park/things-to-do/tracks/hooker-valley-track/' },
-          { name: '🌤️ MetService 库克山高山实时天气预报', mapQuery: 'MetService Mount Cook Weather', url: 'https://www.metservice.com/mountains-and-parks/national-parks/aoraki-mount-cook' }
+          { name: '🌤️ MetService 库克山高山实时天气预报', mapQuery: 'MetService Mount Cook Weather', url: 'https://www.metservice.com/mountains-and-parks/national-parks/aoraki-mt-cook' }
         ],
         desc: '出发前查验：07:30 - 08:00 通过 DoC 官网或 MetService 确认库克山天气与 Hooker Valley Track 开放状态。',
         mapQuery: 'Aoraki Mount Cook National Park',

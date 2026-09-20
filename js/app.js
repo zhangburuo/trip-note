@@ -1716,16 +1716,13 @@ document.addEventListener('DOMContentLoaded', () => {
               const windSpeed = loc.windInfo ? loc.windInfo.speed : 14;
               const windIcon = loc.windInfo ? loc.windInfo.icon : '🍃';
               const windTagFull = loc.windInfo ? loc.windInfo.tag : '🍃 14km/h 微风';
-              const verifyLink = loc.sourceApiUrl
-                ? `<a href="${loc.sourceApiUrl}" target="_blank" class="popover-source-link">📡 Open-Meteo API 原始数据 ↗ <span style="opacity:0.6;font-size:0.7rem;">(JSON 可直接阅读验证)</span></a>`
-                : '';
               const agencyLink = `<a href="${loc.agencyUrl}" target="_blank" class="popover-source-link">🏛️ ${loc.agencyName}（${loc.city} 官方精准预报）↗</a>`;
               const historicalNote = loc.isHistorical
                 ? `<br><br>💡 <b>注意</b>：目标日期超出预报窗口，当前显示为历史气候参考。`
                 : '';
               return `
                 <div class="weather-badge-wrapper" onclick="toggleWeatherPopover(this, event)">
-                  <div class="weather-badge-chip interactive-hover" title="点击查看 ${loc.city} 天气数据来源与验证">
+                  <div class="weather-badge-chip interactive-hover" title="点击查看 ${loc.city} 天气详情与官方预报">
                     <span>${loc.icon} ${loc.city} ${loc.tempDisplay}</span>
                     <span class="weather-divider">·</span>
                     <span>${windIcon} ${windSpeed}km/h</span>
@@ -1740,7 +1737,6 @@ document.addEventListener('DOMContentLoaded', () => {
                       🌅 <b>日出</b>：${w.sunrise} · 🌇 <b>日落</b>：${w.sunset}${historicalNote}
                     </div>
                     <div class="popover-links-group">
-                      ${verifyLink}
                       ${agencyLink}
                     </div>
                   </div>
