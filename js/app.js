@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeDestinationFilter = 'all';
   let activeViewMode = 'timeline'; // 'timeline' | 'map'
   let selectedMapDayNum = 1;
-  let activeDayPlans = { 'day-5': 'A' }; // Store active plan selection ('A' | 'B') per multi-plan day
+  let activeDayPlans = {}; // Store active plan selection ('A' | 'B') per multi-plan day
   let expandedDays = {}; // Store expanded state per day ('day-1', 'day-2'...) - Default: Collapsed
   let simulatedDateStr = null; // e.g., '2026/10/01' for testing or null for real-time
   let currentActiveDayNum = null;
@@ -774,6 +774,7 @@ document.addEventListener('DOMContentLoaded', () => {
       { pattern: /高山三文鱼|三文鱼饭|三文鱼刺身/i, tag: '🐟 高山纯净三文鱼' },
       { pattern: /鲑鱼派/i, tag: '🥧 招牌鲑鱼派' },
       { pattern: /牛肉派/i, tag: '🥩 现烤牛肉派' },
+      { pattern: /肉派/i, tag: '🥧 招牌现烤肉派' },
       { pattern: /白葡萄酒|长相思|Sauvignon/i, tag: '🍷 新西兰白葡萄酒' },
       { pattern: /Fish\s*&\s*Chips|炸鱼薯条/i, tag: '🍟 现炸 Fish & Chips' },
       { pattern: /手冲|Espresso|澳白|Flat White/i, tag: '☕ 精品咖啡' },
@@ -818,10 +819,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (/观星|银河|暗夜/i.test(text)) {
       catIcon = '🌌';
       catName = '国际暗夜保护区观星';
-    } else if (/动物园|羊驼|Taronga|Featherdale|Alpaca|考拉|袋鼠/i.test(text)) {
+    } else if (/动物园|羊驼|Taronga|Featherdale|Alpaca|考拉|袋鼠|Willowbank|柳岸|奇异鸟|Kiwi/i.test(text)) {
       catIcon = '🐨';
       catName = '野生动物探访';
-    } else if (/观景台|Lookout|日落|全景|Mt John|巨石阵|Castle Hill|海湾|Pukaki/i.test(text)) {
+    } else if (/观景台|Lookout|日落|全景|Mt John|巨石阵|Castle Hill|海湾|Pukaki|缆车|Gondola/i.test(text)) {
       catIcon = '🌅';
       catName = '观景摄影地标';
     } else if (/历史|大楼|教堂|海关|广场|歌剧院|植物园|雅芳河|市区|街区/i.test(text)) {
