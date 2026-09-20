@@ -657,19 +657,11 @@
   gap: 1.75rem;
 }
 
-/* Row-Aligned Parallel Dual-Column Grid */
+/* Single-Axis Flow Timeline Row (V41.0 Unified Flow) */
 .timeline-row-grid {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 1.75rem;
-  align-items: start;
+  display: block;
+  width: 100%;
   position: relative;
-}
-
-@media (max-width: 868px) {
-  .timeline-row-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Timeline Item Primary Column */
@@ -753,128 +745,7 @@
   flex: 1;
 }
 
-/* Timeline Item Row Extension Column (Speech Bubble Extra Info) */
-.timeline-extension-col {
-  width: 100%;
-}
 
-.timeline-extension-col:empty {
-  display: none !important;
-}
-
-.speech-bubble-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-glass-bright);
-  backdrop-filter: blur(16px);
-  border-radius: var(--radius-lg);
-  padding: 1.1rem 1.25rem;
-  box-shadow: var(--shadow-card);
-  position: relative;
-  transition: var(--transition-fast);
-}
-
-.speech-bubble-card::before {
-  content: '';
-  position: absolute;
-  left: -8px;
-  top: 18px;
-  width: 0;
-  height: 0;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
-  border-right: 8px solid var(--border-glass-bright);
-}
-
-@media (max-width: 868px) {
-  .speech-bubble-card::before {
-    display: none;
-  }
-}
-
-.speech-bubble-card:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-}
-
-.bubble-cost-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  background: rgba(52, 211, 153, 0.15);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  color: #34d399;
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-sm);
-  margin-bottom: 0.5rem;
-}
-
-.bubble-parking-tag {
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: var(--radius-sm);
-  padding: 0.6rem 0.85rem;
-  font-size: 0.82rem;
-  color: #7dd3fc;
-  line-height: 1.45;
-  margin-bottom: 0.45rem;
-}
-
-.bubble-warning-box {
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  border-radius: var(--radius-sm);
-  padding: 0.6rem 0.85rem;
-  font-size: 0.82rem;
-  color: #fca5a5;
-  line-height: 1.45;
-}
-
-.bubble-pitstops-box {
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  border-radius: var(--radius-sm);
-  padding: 0.6rem 0.85rem;
-  font-size: 0.82rem;
-  color: #fde68a;
-  margin-top: 0.4rem;
-}
-
-.bubble-flight-header, .bubble-hotel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 0.45rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
-}
-
-.bubble-flight-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #38bdf8;
-}
-
-.bubble-hotel-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #34d399;
-}
-
-.bubble-hotel-time-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #6ee7b7;
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 0.3rem 0.65rem;
-  border-radius: var(--radius-sm);
-  margin-bottom: 0.35rem;
-}
 
 /* Plan Selector Badges for Dual-Plan Items */
 .plan-chip-a {
@@ -2139,7 +2010,10 @@
 
 .drawer-desc-block p,
 .drawer-tips-block,
-.drawer-uber-block {
+.drawer-uber-block,
+.drawer-parking-block,
+.drawer-cost-block,
+.drawer-pitstops-block {
   color: #cbd5e1;
   margin: 0;
   line-height: 1.5;
@@ -2169,6 +2043,47 @@
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   color: #cbd5e1;
   line-height: 1.5;
+}
+
+.drawer-cost-block {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-left: 3px solid #10b981;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.drawer-pitstops-block {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-left: 3px solid #f59e0b;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.drawer-pitstops-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
+
+.drawer-pitstop-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  line-height: 1.35;
 }
 
 /* ==========================================================================
@@ -3432,31 +3347,7 @@
     justify-content: center;
   }
 
-  /* 8. Extension Column: Inset Embedded Look on Mobile */
-  .timeline-extension-col {
-    padding-left: 1.15rem;
-    width: 100%;
-  }
 
-  .speech-bubble-card {
-    padding: 0.85rem 1rem;
-    border-radius: var(--radius-sm);
-    background: rgba(15, 23, 42, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: none;
-  }
-
-  .speech-bubble-card::before {
-    display: none !important;
-  }
-
-  .bubble-parking-tag,
-  .bubble-warning-box,
-  .bubble-pitstops-box {
-    font-size: 0.8rem;
-    padding: 0.5rem 0.7rem;
-    line-height: 1.4;
-  }
 
   /* 9. Public Transit Card Mobile Overhaul (Continuous Subway Track Stepper) */
   .transit-node-card {

@@ -15,13 +15,10 @@
 
 ## 🎨 2. UI & UX 设计规范 (Design Taste & Aesthetics)
 
-- **行级对齐双列布局 (Integrated Row-Aligned Two-Column Layout)**：
-  - **非独立分离侧边栏**：右栏作为主栏每一行 (Timeline Row) 的**行级延伸拓展列**（如同表格的第二列），与左栏同频同步滚动与对齐。
-  - **左侧主栏**：专注时间点、活动/航班/酒店名称、基础描述与航线/房型、子景点（带有 `🧭 导航` `📍 定位` `🦉 猫途鹰`）、酒店操作按钮。取消有子景点的父卡片冗余按钮。
-  - **右侧延伸栏**：与左侧活动行**平齐对齐**，展示该行专属的 Speech Bubble 卡片 (`speech-bubble-card`)：
-    - 航班行：展示**航班实时更新大牌**（`🟢 航班状态`、`航站楼`、`登机口`、`登机时间`、`预计起降`）。
-    - 酒店行：展示**建议入住与退房时间提醒**（`🔑 建议入住`、`🚪 退房时间`）。
-    - 其他行程行：展示 **`💰 预估开销`**、**`⚠️ 交通/刷卡/避坑注意事项`**、**`🅿️ 停车指南`**、**`🛑 自驾路线补给`**。
+- **单主轴一体化时间轴布局 (Single-Axis Unified Timeline Layout - V41.0)**：
+  - **废除右侧双列延伸栏**：彻底移除以往的右侧双列边栏 (`timeline-extension-col` / `speech-bubble-card`)，使全平台（电脑、平板、手机）统一呈现单主轴连贯流式排版。
+  - **核心卡片正面 (Glance & Action)**：专注时间点、活动/航班/酒店/自驾路线名称、类别徽章、登机牌走廊、地铁 Stepper、招牌必尝菜品、一键自驾导航或电话拨打。
+  - **一体化展开详情与备忘抽屉 (`card-detail-drawer`)**：平滑折叠抽屉深度整合全量背景与备忘信息，内含：`📝 行程指引与说明`、`⚠️ 避坑与重要提示`、`🅿️ 泊车与设施指南`、`🛑 沿途经停与路线备忘`、`💰 预估开销与费用说明`、`🚕 打车 (Uber) 备选方案`，消除信息双重展示与割裂。
 - **Day Header 动态气象与天文组件 (Day Weather & Astronomy Widget System)**：
   - 移除原头部国旗勋章（`destination-chip`），保持 Day Header 极致精简。
   - **实时气象 Chip**：展示实时图标、温度、天气状况与风速 (`🌤️ 18°C 晴间多云 · 💨 12 km/h`)，点击直接跳转至权威气象预测来源页面。
@@ -153,6 +150,7 @@ interface TimelineItem {
 | **V39.1** | 2026/09/18 | **卡片底部幽灵空白根治、冗余操作按钮剥离与 Phase 3 场景化按钮矩阵规划 (Card Bottom Ghost Gap Elimination & Redundant Action Buttons Removal)**：<br>1. **根治卡片底部空白幽灵占位**：深度定位并修复 CSS Grid 折叠抽屉（`0fr ➔ 1fr`）因未声明 `overflow: hidden;` 导致内部内边距与外边距溢出产生的 ~37px 幽灵占位；新增 `.drawer-collapse-inner { min-height: 0; overflow: hidden; }` 进行物理隔离，折叠态实现 0.0px 绝对归零；<br>2. **全面剥离机械堆叠的通用操作按钮**：从公共交通 (`transit`)、自驾路书 (`drive`)、自然人文景点 (`spot`) 主卡片中彻底剔除无差别的 `🧭 导航 / 📍 定位 / 🦉 猫途鹰`；从民航航班 (`flight`) 中剔除通用导航按钮；酒店卡片仅保留专属 `📞 拨打电话`，餐厅卡片仅保留专属 `🌐 官网预约`；<br>3. **卡片内边距与信息密度深度紧凑化**：将 6 类 2.0 卡片的内边距收紧至 `0.85rem 1.05rem`，元素流间隙收紧至 `0.6rem`；折叠切换条紧凑化为 28px 极简微胶囊；新增 `.timeline-extension-col:empty { display: none !important; }` 根除移动端空栏占位；<br>4. **Phase 3 差异化行动按钮矩阵确立**：确立严谨的卡片功能矩阵（公共交通/自驾绝不使用猫途鹰与机械导航，餐饮/酒店聚焦实拍评价与一键直拨，景点聚焦机位攻略与 DoC 官方查验）；<br>5. **全端版本穿透**：全量静态资源与 Service Worker 缓存池版本升级至 `v39.1`。 |
 | **V39.2** | 2026/09/18 | **公共交通子地点按钮剥离 & 自驾路书专属自驾导航按钮恢复 (Transit Sub-Spots Cleanup & Dedicated Driving Navigation Button)**：<br>1. **彻底移除公交卡片子地点中的导航/定位/猫途鹰**：排查发现 `transit-card-v2` 中仍挂载了 `${subSpotsContainerHtml}`，导致布里斯班 Airtrain、渡轮等公交站被作为普通子地点渲染出火车站/码头的 `🧭 导航 / 📍 定位 / 🦉 猫途鹰` 按钮；鉴于地铁/公交站点已由专属图元化的连续轨道图（`transit-v2-stepper`）与出站链完美展示，彻底从 `transit-card-v2` 中剥离子地点列表，杜绝重复与干扰；<br>2. **恢复自驾卡片专属一键自驾导航按钮**：自驾路书（`drive-card-v2`）是公路旅行中最依赖导航的场景，恢复并定制高质感专属导航按钮 `.drive-nav-btn`（`🧭 开启自驾导航`），采用琥珀金公路渐变微光，直连 Google Maps 原生驾车导航（`travelmode=driving`）；<br>3. **全端版本穿透**：全量静态资源与 Service Worker 缓存池版本升级至 `v39.2`。 |
 | **V40.0** | 2026/09/19 | **Day 5 ~ Day 7 行程重构：库克山日落金山、Tekapo 第二晚 Azure 民宿、柳岸动物园奇异鸟与基督城 City Walk 全量升级**：<br>1. **Day 5 (10/01 周四)**：重构为 Lake Tekapo 出发 ➔ 库克山 Hooker Valley Track 往返冰川徒步 ➔ 车内/湖畔自备快捷午餐 ➔ SH80 景观公路走走停停 (Peter's Lookout / 信息中心 / 高山三文鱼) ➔ Lake Pukaki 西岸日落金山摄影 ➔ 返回 Lake Tekapo 办理 Azure Tekapo 民宿 Check-in (连住第2晚) ➔ Kohan 日料/夜空餐厅晚宴与好牧羊人教堂银河观星；<br>2. **Day 6 (10/02 周五)**：重构为 Azure Tekapo 退房启程 ➔ SH79/SH73 景观自驾 (顺路 Fairlie Bakehouse 采购招牌肉派与咖啡) ➔ Castle Hill 纳尼亚传奇巨石阵漫步 ➔ 柳岸野生动物园 (Willowbank Wildlife Reserve 探寻国宝奇异鸟 Kiwi 与喂食羊驼/鹿) ➔ 基督城 Fable 酒店 Check-in & Lichfield 停车 ➔ Riverside Market 滨河集市室内晚餐；<br>3. **Day 7 (10/03 周六)**：重构为 Fable 酒店退房 ➔ 基督城经典 City Walk (新复古街 ➔ 雅芳河畔 ➔ 追忆之桥 ➔ 植物园玫瑰园与温室 ➔ Child Sister 手冲咖啡 Brunch) ➔ Christchurch Gondola 缆车升至 Mount Cavendish 山顶 360° 全景 ➔ BP Connect (Russley Rd) 满油加油 ➔ Snap Rentals 还车与免费 Shuttle ➔ Manawa 贵宾室 ➔ 澳洲航空 QF8765 / 阿联酋航空 EK413 飞往悉尼 ➔ 悉尼 SmartGate 极速入境 ➔ T8 Airport Line 轨交 ➔ PARKROYAL Darling Harbour Check-in ➔ 达令港周六海上夜空烟花秀 ➔ Zephyr 高空夜景酒吧微醺；<br>4. **App 逻辑与解析器升级**：将 `activeDayPlans` 初始化重置为 `{}`；在 `parseSpotInfo` 中注入 `Willowbank|柳岸|奇异鸟|Kiwi`（野生动物探访）与 `缆车|Gondola`（观景摄影地标）智能匹配；在 `parseFoodInfo` 中注入 `肉派`（招牌现烤肉派）智能匹配；<br>5. **应急纸质单与全端版本穿透**：同步更新 `index.html` 应急打印概览表格中 Day 5、Day 6、Day 7 行程摘要与住宿酒店信息；全量静态资源与 Service Worker 缓存池版本升级至 `v40.0`。 |
+| **V41.0** | 2026/09/20 | **单主轴一体化重构：彻底废除右侧边栏，备忘信息深度整合入“展开详情与备忘”渐进抽屉 (Single-Axis Unified Layout & Drawer Notes Vault)**：<br>1. **彻底移除右侧双列延伸栏**：废除自 V7 引入的双列边栏（`.timeline-extension-col` 与 `.speech-bubble-card`），消除卡片与侧栏之间大面积存在的机械重复信息；全平台统一呈现单主轴连贯流式排版；<br>2. **抽屉板块体系升级与重复信息合并**：将全部备忘信息统一收纳至卡片底部的“展开详情与备忘” (`card-detail-drawer`)，建立 6 大彩色微光板块：<br> - `📝 行程指引与说明`（`item.desc`，板岩灰微光）；<br> - `⚠️ 避坑与重要提示`（`item.tips`，琥珀金微光）；<br> - `🅿️ 泊车与设施指南`（`item.parking`，冰蓝微光）；<br> - `🛑 沿途经停与路线备忘`（`item.pitstops`，暖橙微光 + 经停标签链）；<br> - `💰 预估开销与费用说明`（`item.cost`，翡翠绿微光）；<br> - `🚕 打车 (Uber) 备选方案`（`uberBackup`，青蓝微光）；<br>3. **CSS 栅格重构与冗余样式精简**：`.timeline-row-grid` 重构为单主轴流式布局，清理已弃用的 speech bubble 相关选择器与移动端折行补丁；更新 `@media print` 应急单纯黑白清晰打印规则；<br>4. **全端版本与离线缓存穿透**：全量静态资源请求字符串、品牌徽章与 Service Worker 缓存池版本升级至 `v41.0`。 |
 
 ---
 

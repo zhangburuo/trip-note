@@ -287,11 +287,32 @@ button {
     color: #333333 !important;
   }
 
-  .speech-bubble-card {
-    background: #f8f8f8 !important;
-    border: 1px solid #aaaaaa !important;
+  .drawer-toggle-btn {
+    display: none !important;
+  }
+
+  .drawer-collapse-container {
+    display: block !important;
+    grid-template-rows: none !important;
+  }
+
+  .drawer-collapse-inner > .drawer-inner-content {
+    opacity: 1 !important;
+    transform: none !important;
+    background: #ffffff !important;
+    border: 1px solid #cccccc !important;
     color: #000000 !important;
-    box-shadow: none !important;
+  }
+
+  .drawer-desc-block p,
+  .drawer-tips-block,
+  .drawer-uber-block,
+  .drawer-parking-block,
+  .drawer-cost-block,
+  .drawer-pitstops-block {
+    background: #fdfdfd !important;
+    border: 1px solid #dddddd !important;
+    color: #000000 !important;
   }
 
   .flight-live-grid {

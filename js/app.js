@@ -976,15 +976,28 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Progressive Disclosure Drawer Renderer
-  function renderCardDetailDrawerHtml(itemId, { desc, tips, uberBackup, pitstops, extraHtml = '' }) {
+  // Progressive Disclosure Drawer Renderer (V41.0 - Single Unified Detail & Notes Vault)
+  function renderCardDetailDrawerHtml(itemId, { desc, tips, parking, cost, pitstops, uberBackup, extraHtml = '' }) {
     const hasDesc = !!desc && desc.trim().length > 0;
     const hasTips = !!tips && tips.trim().length > 0;
+    const hasParking = !!parking && parking.trim().length > 0;
+    const hasCost = !!cost && cost.trim().length > 0;
     const hasUber = !!uberBackup && uberBackup.trim().length > 0;
     const hasPitstops = Array.isArray(pitstops) && pitstops.length > 0;
 
-    if (!hasDesc && !hasTips && !hasUber && !hasPitstops && !extraHtml) {
+    if (!hasDesc && !hasTips && !hasParking && !hasCost && !hasUber && !hasPitstops && !extraHtml) {
       return '';
+    }
+
+    let pitstopsContentHtml = '';
+    if (hasPitstops) {
+      const tags = pitstops.map(p => `<span class="drawer-pitstop-tag">🛑 ${p}</span>`).join('');
+      pitstopsContentHtml = `
+        <div class="drawer-pitstops-block">
+          <div class="drawer-section-title">🛑 沿途经停与路线备忘</div>
+          <div class="drawer-pitstops-tags">${tags}</div>
+        </div>
+      `;
     }
 
     return `
@@ -1007,8 +1020,21 @@ document.addEventListener('DOMContentLoaded', () => {
               ` : ''}
               ${hasTips ? `
                 <div class="drawer-tips-block">
-                  <div class="drawer-section-title">⚠️ 避坑与交通注意事项</div>
+                  <div class="drawer-section-title">⚠️ 避坑与重要提示</div>
                   <div>${tips}</div>
+                </div>
+              ` : ''}
+              ${hasParking ? `
+                <div class="drawer-parking-block">
+                  <div class="drawer-section-title">🅿️ 泊车与设施指南</div>
+                  <div>${parking}</div>
+                </div>
+              ` : ''}
+              ${pitstopsContentHtml}
+              ${hasCost ? `
+                <div class="drawer-cost-block">
+                  <div class="drawer-section-title">💰 预估开销与费用说明</div>
+                  <div>${cost}</div>
                 </div>
               ` : ''}
               ${hasUber ? `
@@ -1095,18 +1121,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasSubSpots = item.subSpots && item.subSpots.length > 0;
         const subSpotsContainerHtml = renderSubSpotsHtml(item.subSpots);
 
-
-        // Generate Row Extension Column Speech Bubble (Aligned directly right next to this row!)
-        let extensionColHtml = '';
-        const parkingHtml = item.parking ? `<div class="bubble-parking-tag">🅿️ 停车指南: ${item.parking}</div>` : '';
-        const costHtml = item.cost ? `<div class="bubble-cost-tag">💰 预估开销: ${item.cost}</div>` : '';
-        const tipsHtml = item.tips ? `<div class="bubble-warning-box">${item.tips}</div>` : '';
-        
-        let pitstopsHtml = '';
-        if (item.pitstops && item.pitstops.length > 0) {
-          const tags = item.pitstops.map(p => `🛑 ${p}`).join(' · ');
-          pitstopsHtml = `<div class="bubble-pitstops-box"><strong>🚗 自驾避坑/路线提醒:</strong> ${tags}</div>`;
-        }
 
         const imageHtml = item.imageUrl ? `
           <div class="spot-image-card" onclick="openImageLightbox('${item.imageUrl}', '${(item.name || '').replace(/'/g, "\\'")}')">
@@ -1209,7 +1223,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const drawerHtml = renderCardDetailDrawerHtml(item.id, {
             desc: item.desc,
-            tips: item.tips
+            tips: item.tips,
+            cost: item.cost
           });
 
           return `
@@ -1233,9 +1248,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${drawerHtml}
                   </div>
                 </div>
-              </div>
-              <div class="timeline-extension-col">
-                ${extensionColHtml}
               </div>
             </div>
           `;
@@ -1270,12 +1282,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const drawerHtml = renderCardDetailDrawerHtml(item.id, {
             desc: item.desc,
             tips: item.tips,
-            extraHtml: item.parking ? `
-              <div class="drawer-parking-block">
-                <div class="drawer-section-title">🅿️ 泊车与车位详情</div>
-                <div>${item.parking}</div>
-              </div>
-            ` : ''
+            parking: item.parking,
+            cost: item.cost
           });
 
           return `
@@ -1304,21 +1312,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   </div>
                 </div>
               </div>
-              <div class="timeline-extension-col">
-                ${extensionColHtml}
-              </div>
-            </div>
-          `;
-        }
-
-        // Other Item Types Extension Bubble (Spot, Food, Transit, Drive)
-        if (parkingHtml || costHtml || tipsHtml || pitstopsHtml) {
-          extensionColHtml = `
-            <div class="speech-bubble-card">
-              ${parkingHtml}
-              ${costHtml}
-              ${tipsHtml}
-              ${pitstopsHtml}
             </div>
           `;
         }
@@ -1407,6 +1400,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const drawerHtml = renderCardDetailDrawerHtml(item.id, {
             desc: item.desc,
             tips: item.tips,
+            cost: item.cost,
+            parking: item.parking,
             uberBackup: tInfo.uberBackup
           });
 
@@ -1436,9 +1431,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${drawerHtml}
                   </div>
                 </div>
-              </div>
-              <div class="timeline-extension-col">
-                ${extensionColHtml}
               </div>
             </div>
           `;
@@ -1503,6 +1495,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const drawerHtml = renderCardDetailDrawerHtml(item.id, {
             desc: item.desc,
             tips: item.tips,
+            parking: item.parking,
+            cost: item.cost,
             pitstops: item.pitstops
           });
 
@@ -1535,9 +1529,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   </div>
                 </div>
               </div>
-              <div class="timeline-extension-col">
-                ${extensionColHtml}
-              </div>
             </div>
           `;
         }
@@ -1566,12 +1557,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const drawerHtml = renderCardDetailDrawerHtml(item.id, {
             desc: item.desc,
             tips: item.tips,
-            extraHtml: item.parking ? `
-              <div class="drawer-parking-block">
-                <div class="drawer-section-title">🅿️ 就近停车与设施</div>
-                <div>${item.parking}</div>
-              </div>
-            ` : ''
+            parking: item.parking,
+            cost: item.cost,
+            pitstops: item.pitstops
           });
 
           return `
@@ -1604,9 +1592,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   </div>
                 </div>
               </div>
-              <div class="timeline-extension-col">
-                ${extensionColHtml}
-              </div>
             </div>
           `;
         }
@@ -1624,12 +1609,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const spotDrawerHtml = renderCardDetailDrawerHtml(item.id, {
           desc: item.desc,
           tips: item.tips,
-          extraHtml: item.parking ? `
-            <div class="drawer-parking-block">
-              <div class="drawer-section-title">🅿️ 停车场与公共设施</div>
-              <div>${item.parking}</div>
-            </div>
-          ` : ''
+          parking: item.parking,
+          cost: item.cost,
+          pitstops: item.pitstops
         });
 
         return `
@@ -1658,9 +1640,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   ${spotDrawerHtml}
                 </div>
               </div>
-            </div>
-            <div class="timeline-extension-col">
-              ${extensionColHtml}
             </div>
           </div>
         `;
