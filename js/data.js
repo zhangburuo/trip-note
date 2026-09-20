@@ -2,7 +2,7 @@
    Trip Note - Data Model & Dynamic Schema (V6)
    ========================================================================== */
 
-const STORAGE_KEY_ITINERARY = 'TRIP_NOTE_ITINERARY_V33';
+const STORAGE_KEY_ITINERARY = 'TRIP_NOTE_ITINERARY_V41_4';
 
 const DESTINATIONS_CONFIG = {
   nz: {
@@ -675,29 +675,14 @@ const initial11DayItinerary = [
         name: '湖景一室公寓B Check-out 退房 (Lakeview Studio B)',
         roomType: '湖景一室公寓',
         checkOutTime: '退房时间: 10:00 前',
-        tips: '🎒 准备提醒：提前准备好今日徒步及午餐的自备简餐/能量棒/水，放入随身背包与保温杯。',
-        desc: '公寓享用自备早餐，办理 Lakeview Studio B 退房（提前准备好今日徒步及午餐的自备简餐/能量棒/水）。',
+        tips: '🎒 <b>准备提醒</b>：提前准备好今日徒步及午餐的自备简餐/能量棒/水，放入随身背包与保温杯。<br>⚠️ <b>出发前查验（07:30 - 08:00）</b>：库克山高山峡谷天气多变，出发前务必在线核验步道开放状态与高山气象预报：<br>• <a href="https://www.doc.govt.nz/parks-and-recreation/places-to-go/canterbury/places/aoraki-mount-cook-national-park/things-to-do/tracks/hooker-valley-track/" target="_blank" rel="noopener noreferrer">🇳🇿 DoC 官网 Hooker Valley Track 开放状态查询 ↗</a><br>• <a href="https://www.metservice.com/mountains-and-parks/national-parks/aoraki-mt-cook" target="_blank" rel="noopener noreferrer">🌤️ MetService 库克山高山实时天气预报 ↗</a>',
+        desc: '公寓享用自备早餐，办理 Lakeview Studio B 退房（提前准备好今日徒步及午餐的自备简餐/能量棒/水）。<br>⚠️ 出发前查验：07:30 - 08:00 通过 DoC 官网或 MetService 确认库克山天气与 Hooker Valley Track 开放状态。',
         mapQuery: 'Lakeview Studio B Lake Tekapo',
         lat: -44.0022,
         lng: 170.4820
       },
       {
         id: 'item-5-2',
-        time: '07:30 - 08:00',
-        type: 'spot',
-        name: '⚠️ 出发前查验：DoC 官网与 MetService 状态判定',
-        tips: '💡 出发前查验：07:30 - 08:00 通过 DoC 官网或 MetService 确认库克山天气与 Hooker Valley Track 开放状态。',
-        subSpots: [
-          { name: '🇳🇿 DoC 官方 Hooker Valley Track 开放状态查询', mapQuery: 'DoC Hooker Valley Track Status', url: 'https://www.doc.govt.nz/parks-and-recreation/places-to-go/canterbury/places/aoraki-mount-cook-national-park/things-to-do/tracks/hooker-valley-track/' },
-          { name: '🌤️ MetService 库克山高山实时天气预报', mapQuery: 'MetService Mount Cook Weather', url: 'https://www.metservice.com/mountains-and-parks/national-parks/aoraki-mt-cook' }
-        ],
-        desc: '出发前查验：07:30 - 08:00 通过 DoC 官网或 MetService 确认库克山天气与 Hooker Valley Track 开放状态。',
-        mapQuery: 'Aoraki Mount Cook National Park',
-        lat: -43.7342,
-        lng: 170.1044
-      },
-      {
-        id: 'item-5-3',
         time: '08:30 - 09:15',
         type: 'drive',
         name: '自驾段 1：Lake Tekapo ➔ 库克山国家公园',
@@ -711,7 +696,7 @@ const initial11DayItinerary = [
         lng: 170.0934
       },
       {
-        id: 'item-5-4',
+        id: 'item-5-3',
         time: '09:30 - 13:00',
         type: 'spot',
         name: 'Hooker Valley Track 壮丽徒步 (往返约3-3.5小时)',
@@ -729,7 +714,7 @@ const initial11DayItinerary = [
         lng: 170.0934
       },
       {
-        id: 'item-5-5',
+        id: 'item-5-4',
         time: '13:00 - 13:40',
         type: 'food',
         name: '车内/湖畔自备快捷午餐',
@@ -742,7 +727,7 @@ const initial11DayItinerary = [
         lng: 170.0934
       },
       {
-        id: 'item-5-6',
+        id: 'item-5-5',
         time: '13:40 - 16:30',
         type: 'spot',
         name: 'SH80 景观公路 ➔ Lake Pukaki 沿线走走停停',
@@ -760,7 +745,7 @@ const initial11DayItinerary = [
         lng: 170.1500
       },
       {
-        id: 'item-5-7',
+        id: 'item-5-6',
         time: '16:30 - 18:30',
         type: 'spot',
         name: 'Lake Pukaki 绝美湖畔慢游 & 日落金山',
@@ -773,7 +758,7 @@ const initial11DayItinerary = [
         lng: 170.1565
       },
       {
-        id: 'item-5-8',
+        id: 'item-5-7',
         time: '18:30 - 19:15',
         type: 'drive',
         name: '自驾段 2：Lake Pukaki ➔ Lake Tekapo',
@@ -786,7 +771,7 @@ const initial11DayItinerary = [
         lng: 170.4855
       },
       {
-        id: 'item-5-9',
+        id: 'item-5-8',
         time: '19:15 - 19:45',
         type: 'hotel',
         name: 'Azure Tekapo 民宿 Check-in',
@@ -801,7 +786,7 @@ const initial11DayItinerary = [
         lng: 170.4855
       },
       {
-        id: 'item-5-10',
+        id: 'item-5-9',
         time: '19:45 - 21:00',
         type: 'food',
         name: 'Tekapo 镇上晚宴 & 自主观星',

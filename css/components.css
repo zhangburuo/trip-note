@@ -2043,6 +2043,20 @@
   line-height: 1.5;
 }
 
+.drawer-inner-content a {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 500;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.drawer-inner-content a:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+  opacity: 0.95;
+}
+
 .drawer-tips-block {
   background: rgba(245, 158, 11, 0.08);
   border: 1px solid rgba(245, 158, 11, 0.2);
