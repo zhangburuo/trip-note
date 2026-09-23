@@ -492,6 +492,7 @@
   font-weight: 700;
   color: #c084fc;
   cursor: pointer;
+  user-select: none;
   transition: var(--transition-fast);
 }
 
@@ -523,7 +524,7 @@
 
 .weather-clothing-wrapper.active {
   z-index: 10002 !important;
-  position: relative !important;
+  position: relative;
 }
 
 .weather-clothing-wrapper.active .weather-clothing-popover {
@@ -647,7 +648,7 @@
 
 .weather-badge-wrapper.active {
   z-index: 10002 !important;
-  position: relative !important;
+  position: relative;
 }
 
 .weather-badge-wrapper.active .weather-detail-popover {
@@ -2598,6 +2599,65 @@
   border-radius: 999px;
 }
 
+.flight-status-badge.is-arrival-status {
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+.flight-card-v2.is-arrival-card {
+  border-left-color: #10b981;
+}
+
+.flight-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.flight-mode-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  outline: none;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.flight-mode-btn:hover {
+  color: #f1f5f9;
+}
+
+.flight-mode-btn.is-active {
+  background: rgba(2, 132, 199, 0.25);
+  color: #38bdf8;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.flight-mode-btn.is-active.is-arrival {
+  background: rgba(16, 185, 129, 0.22);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
 .flight-route-corridor {
   display: flex;
   align-items: center;
@@ -2701,6 +2761,18 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flight-val-highlight {
+  color: #38bdf8;
+  font-weight: 800;
+}
+
+.is-arrival-grid .flight-val-highlight {
+  color: #34d399;
 }
 
 /* ==========================================================================
@@ -3182,7 +3254,9 @@
   .weather-mount-box,
   .weather-widget-group,
   .weather-clothing-wrapper,
-  .weather-badge-wrapper {
+  .weather-clothing-wrapper.active,
+  .weather-badge-wrapper,
+  .weather-badge-wrapper.active {
     position: static !important;
   }
 
@@ -3193,11 +3267,13 @@
     right: 0.75rem !important;
     top: calc(100% + 6px) !important;
     width: auto !important;
+    min-width: 280px !important;
     max-width: calc(100vw - 1.5rem) !important;
     box-sizing: border-box !important;
     z-index: 10005 !important;
     max-height: 75vh !important;
     overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
     border-radius: var(--radius-md) !important;
     padding: 1rem 1.15rem !important;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.95), 0 0 24px rgba(168, 85, 247, 0.35) !important;

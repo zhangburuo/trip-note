@@ -2,7 +2,7 @@
    Trip Note - Data Model & Dynamic Schema (V6)
    ========================================================================== */
 
-const STORAGE_KEY_ITINERARY = 'TRIP_NOTE_ITINERARY_V41_4';
+const STORAGE_KEY_ITINERARY = 'TRIP_NOTE_ITINERARY_V41_5';
 
 const DESTINATIONS_CONFIG = {
   nz: {
@@ -74,12 +74,18 @@ const initial11DayItinerary = [
         flightCode: '南方航空 CZ381',
         flightRoute: '广州白云 T2 ➔ 布里斯班 T1',
         terminal: '广州 T2 ➔ 布里斯班 T1',
+        depTerminal: '广州 T2',
         gate: 'B224 (预估)',
         boardingTime: '20:25',
         flightStatus: '🟢 计划/准点',
         estDeparture: '21:05 (09/27)',
         estArrival: '08:25(+1) (09/28)',
-        desc: '夜航直飞，机上过夜休息 (飞行约 9小时20分)',
+        arrTerminal: '布里斯班 T1',
+        baggageCarousel: '看即时大牌',
+        customsChannel: '自助通关',
+        arrTimeDiff: '08:25 (+2h)',
+        desc: '夜航直飞，机上过夜休息 (飞行约 9小时20分)。次日清晨抵达布里斯班开启过境慢游。',
+        tips: '🛬 <b>落地入境与接驳指引</b>：<br>• <b>行李与通关</b>：持中国新版电子护照可直接走 SmartGate 自助通关闸机，极速通关；随后前往国际到达大厅行李大屏查看对应转盘提取行李。<br>• 🛃 <b>澳大利亚海关极严警示</b>：严禁携带任何新鲜水果、肉蛋制品、乳制品与动植物种子；如随身备有处方药请如实申报，无申报走绿色通道，有申报走红色通道。<br>• 🚕 <b>机场接驳交通</b>：出关后可于 T1 到达层 Smarte Carte 寄存随身行李，沿指示步行 3 分钟乘 Airtrain 机场快线直达市区；或至 Level 2 网约车专区乘坐 Uber。',
         mapQuery: 'Guangzhou Airport Terminal 2'
       }
     ]
@@ -120,9 +126,15 @@ const initial11DayItinerary = [
         flightCode: '南方航空 CZ381 (到达)',
         flightRoute: '顺利降落布里斯班 T1',
         terminal: '布里斯班国际 T1',
+        depTerminal: '广州 T2',
         flightStatus: '🟢 已降落/准点',
+        arrTerminal: '布里斯班 T1',
+        baggageCarousel: '看即时大牌',
+        customsChannel: '自助通关',
+        arrTimeDiff: '08:25 (准点)',
         estArrival: '08:25',
-        desc: '办理入境手续，准备开启过境慢游。',
+        desc: '办理入境手续，提取托运行李，准备开启过境慢游。',
+        tips: '🛬 <b>落地通关与寄存指引</b>：<br>• 🛂 <b>通关流程</b>：走 SmartGate 电子护照自助通道，插卡拍照凭打印小票直接过闸机；<br>• 🧳 <b>行李提取</b>：查看到达大厅大屏确认转盘号提取托运行李；<br>• ⚠️ <b>海关申报</b>：澳洲生物安全法极严，严禁携带水果肉类与违禁品，有申报走红色通道；<br>• 🎒 <b>行李寄存</b>：随身行李可寄存至 T1 到达层 Smarte Carte 柜台（约 $35 AUD/天）。',
         mapQuery: 'Brisbane International Airport Terminal 1',
         lat: -27.3842,
         lng: 153.1175
@@ -277,12 +289,18 @@ const initial11DayItinerary = [
         flightCode: '新西兰航空 NZ204',
         flightRoute: '布里斯班 T1 (18:10) ➔ 基督城 T1 (00:40+1)',
         terminal: '布里斯班 T1 ➔ 基督城 T1',
+        depTerminal: '布里斯班 T1',
         gate: '78 (预估)',
         boardingTime: '17:30',
         flightStatus: '🟢 计划/准点',
         estDeparture: '18:10',
         estArrival: '00:40(+1)',
-        desc: '飞行 3小时30分，跨越塔斯曼海',
+        arrTerminal: '基督城 T1',
+        baggageCarousel: '看即时大牌',
+        customsChannel: '自助通关',
+        arrTimeDiff: '00:40 (+5h)',
+        desc: '飞行 3小时30分，跨越塔斯曼海，深夜抵达新西兰南岛基督城。',
+        tips: '🛬 <b>基督城入境与深夜抵店指引</b>：<br>• 🛂 <b>新西兰入境</b>：持中国新版电子护照可走 eGate 自助通道；<br>• ⚠️ <b>新西兰生物安全严苛警示</b>：严禁携带蜂蜜、新鲜水果、肉制品，户外徒步鞋若带有泥土必须走申报通道交由检疫清洗；<br>• 🏨 <b>抵店接驳</b>：提取行李出关后，航站楼外步行 2 分钟即达正对面的克赖斯特彻奇机场诺富特酒店 (Novotel)，极速办理入住休息。',
         mapQuery: 'Brisbane Airport Terminal 1',
         lat: -27.3842,
         lng: 153.1175
@@ -1097,12 +1115,17 @@ const initial11DayItinerary = [
         flightCode: 'QF8765 / EK413 (EK413 承运)',
         flightRoute: '基督城 T1 (18:20) ➔ 悉尼 T1 (18:40 悉尼时间)',
         terminal: '基督城 T1 ➔ 悉尼 T1',
+        depTerminal: '基督城 T1',
         gate: '12 (预估)',
         boardingTime: '17:40',
         flightStatus: '🟢 计划/准点',
         estDeparture: '18:20',
         estArrival: '18:40 (悉尼时间)',
-        tips: '✈️ 航班体验：搭乘航班飞往悉尼 (EK413 承运，机上享用晚餐)。飞行 3.5 小时，跨国时差 -2 小时。',
+        arrTerminal: '悉尼 T1',
+        baggageCarousel: '看即时大牌',
+        customsChannel: 'SmartGate',
+        arrTimeDiff: '18:40 (-2h)',
+        tips: '🛬 <b>悉尼落地入境与 T8 快线接驳指引</b>：<br>• 🛂 <b>极速通关</b>：悉尼 SmartGate 自助通关，持电子护照插卡拍照领小票过闸；<br>• 🧳 <b>行李提取</b>：查看大屏指定转盘提取行李，穿过海关通道；<br>• 🚆 <b>机场快线</b>：航站楼地下一层直通 T8 Airport Line 轨交，持 Apple Pay 挥卡进站，直达市区 Museum / Town Hall 站；<br>• 跨国时差比新西兰慢 2 小时，机上享用晚餐，抵店后可直奔达令港看 21:00 周六海上烟花秀。',
         desc: '航班：QF8765 / EK413 (18:20 起飞，飞行 3.5 小时，18:40 降落悉尼 Intl 机场，EK413 承运，机上享用晚餐)。',
         mapQuery: 'Christchurch International Airport',
         lat: -43.4876,
@@ -1720,12 +1743,18 @@ const initial11DayItinerary = [
         flightCode: '香港航空 HX018',
         flightRoute: '12:05 悉尼T1 ➔ 20:10 香港T1',
         terminal: '悉尼 T1 ➔ 香港 T1',
+        depTerminal: '悉尼 T1',
         gate: '看现场大牌',
         boardingTime: '11:25',
         flightStatus: '🟢 计划/准点',
         estDeparture: '12:05',
         estArrival: '20:10 (香港时间)',
+        arrTerminal: '香港 T1',
+        baggageCarousel: '直挂免提',
+        customsChannel: '直挂转机',
+        arrTimeDiff: '20:10 (同区)',
         desc: '✈️ 搭乘香港航空 HX018 (12:05 悉尼 T1 起飞，飞行约 10 小时 05 分钟，香港时间 20:10 降落香港国际机场 T1)。机上享用午餐与晚餐，惬意休息。',
+        tips: '🛬 <b>香港国际机场极速中转指引</b>：<br>• 🧳 <b>行李直挂北京</b>：在悉尼值机时托运行李已直接直挂至终点北京首都机场，在香港无需提取行李；<br>• 🛂 <b>极速转机通道</b>：下机后直接跟随「转机 (Transfers)」指示牌前行，出示下程 HX304 登机牌重新过随身安检；<br>• 🚪 上至出港层后查看大屏确认 HX304 登机口（转机窗口约 1 小时 20 分钟）。',
         mapQuery: 'Sydney Airport Terminal 1'
       },
       {
@@ -1746,12 +1775,18 @@ const initial11DayItinerary = [
         flightCode: '香港航空 HX304',
         flightRoute: '21:30 香港T1 ➔ 00:50(+1) 北京T2',
         terminal: '香港 T1 ➔ 北京 T2',
+        depTerminal: '香港 T1',
         gate: '看现场大牌',
         boardingTime: '20:50',
         flightStatus: '🟢 计划/准点',
         estDeparture: '21:30',
         estArrival: '00:50 (+1天)',
+        arrTerminal: '北京 T2',
+        baggageCarousel: '看即时大牌',
+        customsChannel: '居民自助',
+        arrTimeDiff: '00:50 (归国)',
         desc: '✈️ 搭乘香港航空 HX304 (21:30 香港 T1 起飞，飞行约 3 小时 20 分钟，次日 00:50 降落北京首都国际机场 T2)。',
+        tips: '🛬 <b>抵京通关与行李提取指引</b>：<br>• 🛂 <b>入境中国</b>：中国公民持电子护照直接走自助快捷查验通道秒通关；<br>• 🧳 <b>行李提取</b>：前往 T2 国际到达大厅行李大屏，确认香港直挂行李转盘号提取行李；<br>• 🚕 <b>深夜交通</b>：可沿指示前往 T2 到达层出租车候车站排队乘车，或在网约车专区乘坐滴滴。',
         mapQuery: 'Hong Kong International Airport'
       },
       {

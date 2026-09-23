@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let simulatedDateStr = null; // e.g., '2026/10/01' for testing or null for real-time
   let currentActiveDayNum = null;
   let currentActiveItemId = null;
+  let flightCardViewModes = {}; // Store manual flight mode selection per item ('departure' | 'arrival')
 
   // UI Elements
   const timelineContainer = document.getElementById('timeline-container');
@@ -960,6 +961,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const durMatch = text.match(/(?:飞行约|飞行)\s*([0-9]+(?:\.[0-9]+)?\s*(?:小时|h)?\s*[0-9]*\s*分?(?:钟)?)/i);
     if (durMatch) duration = durMatch[1].trim();
 
+    // 出发阶段极简 4 格
+    const depTerminal = item.depTerminal || (item.terminal ? item.terminal.split('➔')[0].trim() : '看即时大牌');
+    const gate = item.gate || '看现场大牌';
+    const boardingTime = item.boardingTime || '未公布';
+    const depTime = item.time ? item.time.split('-')[0].trim() : (item.estDeparture || '计划时刻');
+
+    // 到达阶段极简 4 格
+    let arrTerminal = item.arrTerminal;
+    if (!arrTerminal) {
+      if (item.terminal && item.terminal.includes('➔')) {
+        arrTerminal = item.terminal.split('➔')[1].trim();
+      } else {
+        arrTerminal = item.terminal || `${arrCity} T1`;
+      }
+    }
+    const baggageCarousel = item.baggageCarousel || '看即时大牌';
+    const customsChannel = item.customsChannel || (/布里斯班|基督城|悉尼|国际/.test(text) ? '自助通关' : '居民通道');
+    const arrTimeDiff = item.arrTimeDiff || (item.estArrival ? item.estArrival.replace(/\(.*?\)/g, '').trim() : '准点');
+
     return {
       depCode,
       depCity,
@@ -968,13 +988,157 @@ document.addEventListener('DOMContentLoaded', () => {
       duration,
       flightCode: item.flightCode || item.name,
       flightStatus: item.flightStatus || '🟢 计划/准点',
+      // 出发阶段指标
+      depTerminal,
+      gate,
+      boardingTime,
+      depTime,
+      // 到达阶段指标
+      arrTerminal,
+      baggageCarousel,
+      customsChannel,
+      arrTimeDiff,
       terminal: item.terminal || '看即时大牌',
-      gate: item.gate || '待公布',
-      boardingTime: item.boardingTime || '未公布',
       estDeparture: item.estDeparture || item.time,
       estArrival: item.estArrival || '准点'
     };
   }
+
+  // Render Ultra-Concise Flight 4-Grid HTML
+  function renderFlightGridHtml(flInfo, isArrival) {
+    if (isArrival) {
+      return `
+        <div class="flight-v2-grid is-arrival-grid">
+          <div class="flight-grid-node">
+            <span class="flight-grid-label">到达航站楼</span>
+            <span class="flight-grid-value">${flInfo.arrTerminal}</span>
+          </div>
+          <div class="flight-grid-node">
+            <span class="flight-grid-label">行李转盘</span>
+            <span class="flight-grid-value flight-val-highlight">🧳 ${flInfo.baggageCarousel}</span>
+          </div>
+          <div class="flight-grid-node">
+            <span class="flight-grid-label">通关方式</span>
+            <span class="flight-grid-value">${flInfo.customsChannel}</span>
+          </div>
+          <div class="flight-grid-node">
+            <span class="flight-grid-label">落地时刻</span>
+            <span class="flight-grid-value">${flInfo.arrTimeDiff}</span>
+          </div>
+        </div>
+      `;
+    } else {
+      return `
+        <div class="flight-v2-grid is-departure-grid">
+          <div class="flight-grid-node">
+            <span class="flight-grid-label">出发航站楼</span>
+            <span class="flight-grid-value">${flInfo.depTerminal}</span>
+          </div>
+          <div class="flight-grid-node">
+            <span class="flight-grid-label">登机口</span>
+            <span class="flight-grid-value">${flInfo.gate}</span>
+          </div>
+          <div class="flight-grid-node">
+            <span class="flight-grid-label">登机时间</span>
+            <span class="flight-grid-value">${flInfo.boardingTime}</span>
+          </div>
+          <div class="flight-grid-node">
+            <span class="flight-grid-label">起飞时刻</span>
+            <span class="flight-grid-value">${flInfo.depTime}</span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // Smart Flight Mode Detector: Determine if flight should show departure or arrival metrics
+  function getFlightCurrentMode(item, dayDateStr) {
+    // 1. Explicit user toggle overrides auto detection
+    if (flightCardViewModes[item.id]) {
+      return flightCardViewModes[item.id];
+    }
+
+    // 2. Inherently arrival card (like item-2-1 落地布里斯班)
+    if (/落地|到达|降落/i.test(item.name)) {
+      return 'arrival';
+    }
+
+    // 3. Automatic time-based detection
+    try {
+      const effectiveDate = getEffectiveDate();
+      if (dayDateStr) {
+        const dateMatch = dayDateStr.match(/(\d{4})\/(\d{2})\/(\d{2})/);
+        if (dateMatch) {
+          const y = parseInt(dateMatch[1], 10);
+          const m = parseInt(dateMatch[2], 10) - 1;
+          const d = parseInt(dateMatch[3], 10);
+
+          const timeMatch = (item.time || item.estDeparture || '').match(/(\d{1,2}):(\d{2})/);
+          if (timeMatch) {
+            const h = parseInt(timeMatch[1], 10);
+            const min = parseInt(timeMatch[2], 10);
+            const flightDepDateTime = new Date(y, m, d, h, min, 0);
+
+            if (effectiveDate >= flightDepDateTime) {
+              return 'arrival';
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Flight mode auto detection error:', e);
+    }
+
+    return 'departure';
+  }
+
+  // Global Flight View Mode Switcher
+  window.toggleFlightCardMode = function(itemId, targetMode, event) {
+    if (event) {
+      if (typeof event.stopPropagation === 'function') event.stopPropagation();
+      if (typeof event.preventDefault === 'function') event.preventDefault();
+    }
+    flightCardViewModes[itemId] = targetMode;
+
+    const cardEl = document.getElementById(`flight-card-${itemId}`);
+    const gridWrap = document.getElementById(`flight-grid-wrap-${itemId}`);
+    if (cardEl && gridWrap) {
+      const isArrival = targetMode === 'arrival';
+      cardEl.classList.toggle('is-arrival-card', isArrival);
+
+      // Find item in tripStore
+      const allDays = (window.tripStore && typeof window.tripStore.getAllDays === 'function')
+        ? window.tripStore.getAllDays()
+        : (window.tripStore ? window.tripStore.itinerary : []);
+      let foundItem = null;
+      for (const day of allDays) {
+        foundItem = (day.items || []).find(i => i.id === itemId);
+        if (foundItem) break;
+      }
+
+      if (foundItem) {
+        const flInfo = parseFlightInfo(foundItem);
+        gridWrap.innerHTML = renderFlightGridHtml(flInfo, isArrival);
+
+        const statusEl = document.getElementById(`flight-status-${itemId}`);
+        if (statusEl) {
+          statusEl.className = `flight-status-badge ${isArrival ? 'is-arrival-status' : ''}`;
+          statusEl.textContent = isArrival && flInfo.flightStatus.includes('计划') ? '🛬 到达指引' : flInfo.flightStatus;
+        }
+
+        // Toggle button states
+        const depBtn = cardEl.querySelector('.flight-mode-btn.is-mode-departure');
+        const arrBtn = cardEl.querySelector('.flight-mode-btn.is-mode-arrival');
+        if (depBtn && arrBtn) {
+          depBtn.classList.toggle('is-active', !isArrival);
+          arrBtn.classList.toggle('is-active', isArrival);
+          arrBtn.classList.toggle('is-arrival', isArrival);
+        }
+      }
+    } else {
+      renderTimelineView();
+    }
+  };
 
   // Progressive Disclosure Drawer Renderer (V41.0 - Single Unified Detail & Notes Vault)
   function renderCardDetailDrawerHtml(itemId, { desc, tips, parking, cost, pitstops, uberBackup, extraHtml = '' }) {
@@ -1180,6 +1344,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Flight Item Node Card (V2 - Apple Boarding Pass & Airport Corridor)
         if (item.type === 'flight') {
           const flInfo = parseFlightInfo(item);
+          const currentMode = getFlightCurrentMode(item, day.date);
+          const isArrival = currentMode === 'arrival';
 
           const corridorHtml = `
             <div class="flight-route-corridor">
@@ -1200,24 +1366,23 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           `;
 
-          const gridHtml = `
-            <div class="flight-v2-grid">
-              <div class="flight-grid-node">
-                <span class="flight-grid-label">航站楼</span>
-                <span class="flight-grid-value">${flInfo.terminal}</span>
-              </div>
-              <div class="flight-grid-node">
-                <span class="flight-grid-label">登机口</span>
-                <span class="flight-grid-value">${flInfo.gate}</span>
-              </div>
-              <div class="flight-grid-node">
-                <span class="flight-grid-label">登机时间</span>
-                <span class="flight-grid-value">${flInfo.boardingTime}</span>
-              </div>
-              <div class="flight-grid-node">
-                <span class="flight-grid-label">起落时刻</span>
-                <span class="flight-grid-value">${flInfo.estDeparture} ➔ ${flInfo.estArrival}</span>
-              </div>
+          const gridHtml = renderFlightGridHtml(flInfo, isArrival);
+
+          // Segmented Mode Switcher Pill (Departure vs Arrival)
+          const modeSwitcherHtml = `
+            <div class="flight-mode-toggle" onclick="event.stopPropagation()">
+              <button type="button" 
+                      class="flight-mode-btn is-mode-departure ${!isArrival ? 'is-active' : ''}" 
+                      onclick="toggleFlightCardMode('${item.id}', 'departure', event)"
+                      title="切换为出发登机视角">
+                🛫 出发
+              </button>
+              <button type="button" 
+                      class="flight-mode-btn is-mode-arrival ${isArrival ? 'is-active is-arrival' : ''}" 
+                      onclick="toggleFlightCardMode('${item.id}', 'arrival', event)"
+                      title="切换为降落到达与行李转盘视角">
+                🛬 到达
+              </button>
             </div>
           `;
 
@@ -1232,18 +1397,21 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="timeline-primary-col">
                 ${renderTimeBadgeHtml(item.time)}
                 <div class="item-content">
-                  <div class="flight-card-v2 apple-glass-card">
+                  <div class="flight-card-v2 apple-glass-card ${isArrival ? 'is-arrival-card' : ''}" id="flight-card-${item.id}">
                     <div class="flight-v2-header">
                       <div class="flight-code-group">
                         <span class="flight-code-badge">✈️ ${flInfo.flightCode}</span>
                         ${isCompleted ? '<span class="timeline-completed-tag">✓ 已打卡</span>' : ''}
                         ${isCurrentActiveItem ? '<span class="live-active-tag">🟢 进行中</span>' : ''}
+                        ${modeSwitcherHtml}
                       </div>
-                      <span class="flight-status-badge">${flInfo.flightStatus}</span>
+                      <span class="flight-status-badge ${isArrival ? 'is-arrival-status' : ''}" id="flight-status-${item.id}">${isArrival && flInfo.flightStatus.includes('计划') ? '🛬 到达指引' : flInfo.flightStatus}</span>
                     </div>
 
                     ${corridorHtml}
-                    ${gridHtml}
+                    <div class="flight-grid-container" id="flight-grid-wrap-${item.id}">
+                      ${gridHtml}
+                    </div>
                     ${imageHtml}
                     ${drawerHtml}
                   </div>
@@ -1757,10 +1925,10 @@ document.addEventListener('DOMContentLoaded', () => {
             `).join('');
 
             const clothingWrapper = `
-              <div class="weather-clothing-wrapper">
-                <button class="weather-clothing-btn interactive-hover" onclick="toggleClothingPopover(this, event)">
+              <div class="weather-clothing-wrapper" onclick="toggleClothingPopover(this, event)">
+                <div class="weather-clothing-btn interactive-hover" title="点击查看 ${day.city} 穿衣与气象建议">
                   <span>👔 穿衣建议</span>
-                </button>
+                </div>
                 <div class="weather-clothing-popover">
                   <button class="popover-close-btn" type="button" onclick="closeAllPopovers(event)" ontouchend="closeAllPopovers(event)" title="关闭" aria-label="关闭">✕</button>
                   <div class="popover-title">👗 ${day.city} 穿衣与气象建议</div>
@@ -1908,12 +2076,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Weather Clothing Advice Popover Interactive Handler
-  window.toggleClothingPopover = function(btnElement, event) {
+  window.toggleClothingPopover = function(element, event) {
     if (event) event.stopPropagation();
-    const wrapper = btnElement.closest('.weather-clothing-wrapper');
+    const wrapper = element.classList.contains('weather-clothing-wrapper')
+      ? element
+      : element.closest('.weather-clothing-wrapper');
     if (!wrapper) return;
     
-    const currentCard = btnElement.closest('.day-card');
+    const currentCard = wrapper.closest('.day-card');
 
     // Close other popovers & remove elevated z-index from other cards
     document.querySelectorAll('.weather-clothing-wrapper').forEach(w => {
@@ -2321,8 +2491,12 @@ document.addEventListener('DOMContentLoaded', () => {
             item.flightCode,
             item.flightRoute,
             item.terminal,
+            item.depTerminal,
+            item.arrTerminal,
             item.gate,
             item.boardingTime,
+            item.baggageCarousel,
+            item.customsChannel,
             item.hotelName,
             item.bookingRef,
             item.carModel,
